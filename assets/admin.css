@@ -1,0 +1,77 @@
+/**
+ * BP Gifts Admin CSS
+ * 
+ * @package BP_Gifts
+ * @since   2.0.0
+ */
+
+/* Gift instructions meta box */
+.bp-gifts-instructions {
+	line-height: 1.6;
+}
+
+.bp-gifts-instructions ol {
+	margin: 10px 0 10px 20px;
+}
+
+.bp-gifts-instructions li {
+	margin-bottom: 5px;
+}
+
+/* Gift post type admin styling */
+.post-type-bp_gifts .wp-list-table .column-featured_image {
+	width: 80px;
+}
+
+.post-type-bp_gifts .wp-list-table .featured-image {
+	max-width: 60px;
+	height: auto;
+	border-radius: 4px;
+}
+
+/* Admin notices styling */
+.notice.bp-gifts-notice {
+	border-left-color: #dc3232;
+}
+
+.notice.bp-gifts-notice.notice-warning {
+	border-left-color: #ffb900;
+}
+
+.notice.bp-gifts-notice.notice-success {
+	border-left-color: #46b450;
+}
+
+/* Gift edit screen improvements */
+.post-type-bp_gifts #postdivrich {
+	display: none;
+}
+
+.post-type-bp_gifts .postbox-container {
+	width: 100%;
+}
+
+.post-type-bp_gifts #side-sortables {
+	min-height: 0;
+}
+
+/* Featured image prompt for gifts */
+.post-type-bp_gifts #postimagediv .inside {
+	position: relative;
+}
+
+.post-type-bp_gifts #postimagediv .inside::after {
+	content: "A featured image is required for gifts to appear in the gift selector.";
+	display: block;
+	margin-top: 10px;
+	padding: 8px 12px;
+	background: #fff3cd;
+	border: 1px solid #ffeaa7;
+	border-radius: 4px;
+	color: #856404;
+	font-size: 12px;
+}
+
+.post-type-bp_gifts #postimagediv.has-featured-image .inside::after {
+	display: none;
+}

@@ -1,0 +1,50 @@
+{
+  "name": "bp-gifts",
+  "version": "2.0.1",
+  "description": "BuddyPress Gifts plugin - Allow users to send virtual gifts to each other",
+  "main": "bp-gifts.php",
+  "scripts": {
+    "build": "grunt build",
+    "watch": "grunt watch",
+    "lint": "grunt lint",
+    "minify": "grunt minify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "buddypress",
+    "wordpress",
+    "gifts",
+    "plugin",
+    "social"
+  ],
+  "author": "SuitePlugins",
+  "license": "GPL-2.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SuitePlugins/bp-gifts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SuitePlugins/bp-gifts/issues"
+  },
+  "homepage": "https://github.com/SuitePlugins/bp-gifts#readme",
+  "devDependencies": {
+    "grunt": "^1.6.1",
+    "grunt-contrib-clean": "^2.0.1",
+    "grunt-contrib-compress": "^2.0.0",
+    "grunt-contrib-concat": "^2.1.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-cssmin": "^5.0.0",
+    "grunt-contrib-jshint": "^3.2.0",
+    "grunt-contrib-uglify": "^5.2.2",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-phpcs": "^0.4.0",
+    "grunt-phplint": "^0.1.0",
+    "grunt-wp-i18n": "^1.0.3",
+    "load-grunt-tasks": "^5.1.0",
+    "time-grunt": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
+}
