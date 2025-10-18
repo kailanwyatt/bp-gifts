@@ -62,6 +62,7 @@ class BP_Gifts_Admin {
 		add_filter( 'post_updated_messages', array( $this, 'updated_messages' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+		add_action( 'save_post', array( $this, 'save_gift_meta' ) );
 	}
 
 	/**
@@ -146,6 +147,18 @@ class BP_Gifts_Admin {
 			'side',
 			'high'
 		);
+
+		// Add myCred point cost meta box if myCred integration is enabled
+		if ( BP_Gifts_Settings::is_mycred_enabled() ) {
+			add_meta_box(
+				'bp-gifts-mycred-cost',
+				__( 'Point Cost', 'bp-gifts' ),
+				array( $this, 'mycred_cost_meta_box' ),
+				'bp_gifts',
+				'side',
+				'default'
+			);
+		}
 	}
 
 	/**
@@ -169,6 +182,62 @@ class BP_Gifts_Admin {
 	}
 
 	/**
+	 * myCred point cost meta box callback.
+	 *
+	 * @since 2.1.0
+	 * @param WP_Post $post The post object.
+	 */
+	public function mycred_cost_meta_box( $post ) {
+		// Add nonce field for security
+		wp_nonce_field( 'bp_gifts_save_mycred_meta', 'bp_gifts_mycred_nonce' );
+
+		// Get current cost
+		$cost = get_post_meta( $post->ID, '_bp_gift_point_cost', true );
+		$cost = $cost !== '' ? floatval( $cost ) : 0;
+
+		// Get point type name for display
+		$point_type_name = __( 'Points', 'bp-gifts' );
+		if ( BP_Gifts_Settings::is_mycred_available() ) {
+			try {
+				$loader = BP_Gifts_Loader_V2::instance();
+				$mycred_service = $loader->get_service( 'mycred_service' );
+				$point_type_name = $mycred_service->get_point_type_name( false );
+			} catch ( Exception $e ) {
+				// Fallback to default
+			}
+		}
+		?>
+		<div class="bp-gifts-mycred-cost">
+			<p>
+				<label for="bp_gift_point_cost">
+					<?php 
+					printf(
+						/* translators: %s: point type name */
+						esc_html__( 'Cost in %s:', 'bp-gifts' ),
+						esc_html( $point_type_name )
+					);
+					?>
+				</label>
+			</p>
+			<p>
+				<input 
+					type="number" 
+					id="bp_gift_point_cost" 
+					name="bp_gift_point_cost" 
+					value="<?php echo esc_attr( $cost ); ?>" 
+					min="0" 
+					step="1"
+					style="width: 100%;"
+				/>
+			</p>
+			<p class="description">
+				<?php esc_html_e( 'Enter the point cost for sending this gift. Set to 0 for free gifts.', 'bp-gifts' ); ?>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Display admin notices.
 	 *
 	 * @since 1.0.0
@@ -187,6 +256,40 @@ class BP_Gifts_Admin {
 				<p><?php esc_html_e( 'BP Gifts requires BuddyPress to be active for full functionality.', 'bp-gifts' ); ?></p>
 			</div>
 			<?php
+		}
+	}
+
+	/**
+	 * Save gift meta data.
+	 *
+	 * @since 2.1.0
+	 * @param int $post_id Post ID.
+	 */
+	public function save_gift_meta( $post_id ) {
+		// Check if this is a gift post
+		if ( get_post_type( $post_id ) !== 'bp_gifts' ) {
+			return;
+		}
+
+		// Check if user has permission to edit
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+
+		// Check for autosave
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		// Verify nonce for myCred meta
+		if ( isset( $_POST['bp_gifts_mycred_nonce'] ) && 
+			 wp_verify_nonce( $_POST['bp_gifts_mycred_nonce'], 'bp_gifts_save_mycred_meta' ) ) {
+			
+			// Save point cost
+			if ( isset( $_POST['bp_gift_point_cost'] ) ) {
+				$cost = max( 0, floatval( $_POST['bp_gift_point_cost'] ) );
+				update_post_meta( $post_id, '_bp_gift_point_cost', $cost );
+			}
 		}
 	}
 }

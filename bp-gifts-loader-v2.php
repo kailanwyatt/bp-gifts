@@ -200,8 +200,15 @@ if ( ! class_exists( 'BP_Gifts_Loader_V2' ) ) :
 			require_once $plugin_dir . 'includes/services/BP_Gifts_Gift_Service.php';
 			require_once $plugin_dir . 'includes/services/BP_Gifts_Message_Service.php';
 			require_once $plugin_dir . 'includes/services/BP_Gifts_Modal_Service.php';
-			require_once $plugin_dir . 'includes/services/BP_Gifts_User_Service.php';			// Include taxonomy
+			require_once $plugin_dir . 'includes/services/BP_Gifts_User_Service.php';
+			require_once $plugin_dir . 'includes/services/BP_Gifts_MyCred_Service.php';
+			
+			// Include taxonomy
 			require_once $plugin_dir . 'includes/BP_Gifts_Taxonomy.php';
+			
+			// Include BuddyPress integration
+			require_once $plugin_dir . 'includes/BP_Gifts_Settings.php';
+			require_once $plugin_dir . 'includes/BP_Gifts_Profile_Tab.php';
 
 			// Include admin files if needed
 			if ( is_admin() ) {
@@ -245,7 +252,13 @@ if ( ! class_exists( 'BP_Gifts_Loader_V2' ) ) :
 					$container->get( 'gift_service' ),
 					$container->get( 'message_service' )
 				);
-			});			// Register Taxonomy
+			});
+
+			$this->container->register( 'mycred_service', function( $container ) {
+				return new BP_Gifts_MyCred_Service();
+			});
+
+			// Register Taxonomy
 			$this->container->register( 'taxonomy', function( $container ) {
 				return new BP_Gifts_Taxonomy( $this->post_type );
 			} );
@@ -279,6 +292,12 @@ if ( ! class_exists( 'BP_Gifts_Loader_V2' ) ) :
 			add_action( 'bp_after_message_content', array( $this, 'display_gift' ) );
 			add_action( 'bp_before_message_thread_content', array( $this, 'display_thread_gift' ) );
 			add_action( 'save_post', array( $this, 'clear_gift_cache' ), 12, 2 );
+			
+			// Initialize BuddyPress settings integration
+			add_action( 'bp_admin_init', array( $this, 'init_admin_settings' ) );
+			
+			// Initialize profile tab (only if enabled)
+			add_action( 'bp_setup_nav', array( $this, 'init_profile_tab' ), 100 );
 		}
 
 		/**
@@ -549,14 +568,15 @@ if ( ! class_exists( 'BP_Gifts_Loader_V2' ) ) :
 				$message_service = $this->get_service( 'message_service' );
 				$modal_service = $this->get_service( 'modal_service' );
 				
-				$gift = $message_service->get_thread_gift( $thread_id );
+				// Get all gifts in the thread
+				$gifts = $message_service->get_thread_gifts( $thread_id );
 				
-				if ( $gift ) {
-					echo $modal_service->render_thread_gift( $gift );
+				if ( ! empty( $gifts ) ) {
+					echo $modal_service->render_thread_gifts( $gifts );
 				}
 			} catch ( Exception $e ) {
 				// Log error but don't break display
-				error_log( 'BP Gifts: Failed to display thread gift - ' . $e->getMessage() );
+				error_log( 'BP Gifts: Failed to display thread gifts - ' . $e->getMessage() );
 			}
 		}
 
@@ -593,6 +613,31 @@ if ( ! class_exists( 'BP_Gifts_Loader_V2' ) ) :
 		 */
 		public function register_shortcodes() {
 			add_shortcode( 'bp_user_gifts', array( $this, 'render_user_gifts_dashboard' ) );
+		}
+
+		/**
+		 * Initialize BuddyPress admin settings integration.
+		 *
+		 * @since 2.1.0
+		 */
+		public function init_admin_settings() {
+			if ( class_exists( 'BP_Admin' ) ) {
+				$settings = new BP_Gifts_Settings();
+				$settings->init();
+			}
+		}
+
+		/**
+		 * Initialize user profile tab if enabled.
+		 *
+		 * @since 2.1.0
+		 */
+		public function init_profile_tab() {
+			// Check if BP Gifts is enabled and user tab setting is enabled
+			if ( BP_Gifts_Settings::is_gifts_enabled() && BP_Gifts_Settings::is_user_tab_enabled() ) {
+				$profile_tab = new BP_Gifts_Profile_Tab();
+				$profile_tab->init();
+			}
 		}
 	}
 endif;

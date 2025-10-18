@@ -1,191 +1,133 @@
-module.exports = function(grunt) {
-    'use strict';
+module.exports = function( grunt ) {
 
-    // Time how long tasks take. Can help when optimizing build times
-    require('time-grunt')(grunt);
+	'use strict';
 
-    // Automatically load required Grunt tasks
-    require('load-grunt-tasks')(grunt);
+	const pkg = grunt.file.readJSON( 'package.json' );
 
-    // Project configuration
-    grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
+	grunt.initConfig({
 
-        // Clean up build directories
-        clean: {
-            build: ['build/'],
-            dist: ['dist/']
-        },
+		pkg: pkg,
 
-        // Copy files to build directory
-        copy: {
-            build: {
-                files: [
-                    {
-                        expand: true,
-                        src: [
-                            '**',
-                            '!node_modules/**',
-                            '!build/**',
-                            '!dist/**',
-                            '!.git/**',
-                            '!.gitignore',
-                            '!Gruntfile.js',
-                            '!package.json',
-                            '!package-lock.json',
-                            '!phpcs.xml',
-                            '!README.md',
-                            '!assets/src/**'
-                        ],
-                        dest: 'build/'
-                    }
-                ]
-            }
-        },
+		addtextdomain: {
+			options: {
+				textdomain: 'bp-gifts',
+			},
+			update_all_domains: {
+				options: {
+					updateDomains: true
+				},
+				src: [ '*.php', '**/*.php', '!.git/**/*', '!bin/**/*', '!node_modules/**/*', '!tests/**/*' ]
+			}
+		},
 
-        // Minify CSS files
-        cssmin: {
-            options: {
-                mergeIntoShorthands: false,
-                roundingPrecision: -1
-            },
-            target: {
-                files: [{
-                    expand: true,
-                    cwd: 'assets/css/',
-                    src: ['*.css', '!*.min.css'],
-                    dest: 'assets/css/',
-                    ext: '.min.css'
-                }]
-            }
-        },
+		wp_readme_to_markdown: {
+			your_target: {
+				files: {
+					'README.md': 'readme.txt'
+				}
+			},
+		},
 
-        // Minify JavaScript files
-        uglify: {
-            options: {
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
-            },
-            build: {
-                files: [{
-                    expand: true,
-                    cwd: 'assets/js/',
-                    src: ['*.js', '!*.min.js'],
-                    dest: 'assets/js/',
-                    ext: '.min.js'
-                }]
-            }
-        },
+		makepot: {
+			target: {
+				options: {
+					domainPath: '/languages',
+					exclude: [ '.git/*', 'bin/*', 'node_modules/*', 'tests/*' ],
+					mainFile: 'bp-gifts.php',
+					potFilename: 'bp-gifts.pot',
+					potHeaders: {
+						poedit: true,
+						'x-poedit-keywordslist': true
+					},
+					type: 'wp-plugin',
+					updateTimestamp: true
+				}
+			}
+		},
 
-        // Concatenate files
-        concat: {
-            options: {
-                separator: ';'
-            },
-            dist: {
-                // Configure as needed for your specific files
-                src: [],
-                dest: ''
-            }
-        },
+		copy: {
+			release: {
+				src: [
+					'**',
+					'!src/**',
+					'!assets/js/src/**',
+					'!assets/css/src/**',
+					'!assets/css/sass/**',
+					'!vendor/**',
+					'!bin/**',
+					'!release/**',
+					'!no-releases/**',
+					'!docs/**',
+					'!tests/**',
+					'!node_modules/**',
+					'!**/*.md',
+					'!.travis.yml',
+					'!.bowerrc',
+					'!.gitignore',
+					'!.distignore',
+					'!.editorconfig',
+					'!bower.json',
+					'!Dockunit.json',
+					'!Gruntfile.js',
+					'!package.json',
+					'!package-lock.json',
+					'!yarn.lock',
+					'!composer.json',
+					'!composer.lock',
+					'!phpcs.xml',
+					'!phpunit.xml',
+					'!phpunit.xml.dist',
+					'!.phpcs.xml.dist',
+				],
+				dest: 'release/' + pkg.version + '/'
+			},
+			svn: {
+				cwd: 'release/<%= pkg.version %>/',
+				expand: true,
+				src: '**',
+				dest: 'release/svn/'
+			},
+			no_releases_readme: {
+				src: 'readme.txt',
+				dest: 'no-releases/bp-gifts.txt'
+			}
+		},
 
-        // Lint JavaScript files
-        jshint: {
-            files: ['Gruntfile.js', 'assets/js/src/**/*.js'],
-            options: {
-                globals: {
-                    jQuery: true,
-                    console: true,
-                    module: true,
-                    document: true,
-                    wp: true
-                }
-            }
-        },
+		clean: {
+			release: [
+				'release/<%= pkg.version %>/',
+				'release/svn/'
+			]
+		},
 
-        // Lint PHP files
-        phplint: {
-            options: {
-                limit: 10,
-                stdout: true,
-                stderr: true
-            },
-            files: ['**/*.php', '!node_modules/**', '!build/**', '!dist/**']
-        },
+		compress: {
+			dist: {
+				options: {
+					mode: 'zip',
+					archive: './release/<%= pkg.name %>.zip'
+				},
+				expand: true,
+				cwd: 'release/<%= pkg.version %>',
+				src: ['**/*'],
+				dest: '<%= pkg.name %>'
+			}
+		}
 
-        // PHP Code Sniffer
-        phpcs: {
-            application: {
-                src: ['**/*.php', '!node_modules/**', '!build/**', '!dist/**']
-            },
-            options: {
-                bin: 'vendor/bin/phpcs',
-                standard: 'WordPress',
-                extensions: 'php',
-                ignore: 'node_modules/**,build/**,dist/**'
-            }
-        },
+	});
 
-        // WordPress i18n
-        makepot: {
-            target: {
-                options: {
-                    domainPath: '/languages',
-                    exclude: ['node_modules/.*', 'build/.*', 'dist/.*'],
-                    mainFile: 'bp-gifts.php',
-                    potFilename: 'bp-gifts.pot',
-                    potHeaders: {
-                        poedit: true,
-                        'x-poedit-keywordslist': true
-                    },
-                    type: 'wp-plugin',
-                    updateTimestamp: true,
-                    updatePoFiles: true
-                }
-            }
-        },
+	// Load tasks
+	grunt.loadNpmTasks( 'grunt-wp-i18n' );
+	grunt.loadNpmTasks( 'grunt-wp-readme-to-markdown' );
+	grunt.loadNpmTasks( 'grunt-contrib-copy' );
+	grunt.loadNpmTasks( 'grunt-contrib-compress' );
+	grunt.loadNpmTasks( 'grunt-contrib-clean' );
 
-        // Create distribution archive
-        compress: {
-            main: {
-                options: {
-                    archive: 'dist/<%= pkg.name %>-<%= pkg.version %>.zip'
-                },
-                files: [
-                    {
-                        expand: true,
-                        cwd: 'build/',
-                        src: ['**'],
-                        dest: '<%= pkg.name %>/'
-                    }
-                ]
-            }
-        },
+	// Register tasks
+	grunt.registerTask( 'default', [ 'i18n', 'readme' ] );
+	grunt.registerTask( 'i18n', [ 'addtextdomain', 'makepot' ] );
+	grunt.registerTask( 'readme', [ 'wp_readme_to_markdown' ] );
+	grunt.registerTask( 'release', [ 'clean:release', 'copy:release', 'copy:svn', 'copy:no_releases_readme', 'compress' ] );
 
-        // Watch for changes and run tasks automatically
-        watch: {
-            css: {
-                files: ['assets/css/src/**/*.css'],
-                tasks: ['cssmin']
-            },
-            js: {
-                files: ['assets/js/src/**/*.js'],
-                tasks: ['jshint', 'uglify']
-            },
-            php: {
-                files: ['**/*.php', '!node_modules/**', '!build/**', '!dist/**'],
-                tasks: ['phplint']
-            }
-        }
-    });
-
-    // Register tasks
-    grunt.registerTask('default', ['jshint', 'phplint']);
-    grunt.registerTask('lint', ['jshint', 'phplint', 'phpcs']);
-    grunt.registerTask('minify', ['cssmin', 'uglify']);
-    grunt.registerTask('build', ['clean:build', 'lint', 'minify', 'copy:build']);
-    grunt.registerTask('dist', ['build', 'clean:dist', 'compress']);
-    grunt.registerTask('i18n', ['makepot']);
-
-    // Development task
-    grunt.registerTask('dev', ['watch']);
+	// Normalize line endings
+	grunt.util.linefeed = '\n';
 };

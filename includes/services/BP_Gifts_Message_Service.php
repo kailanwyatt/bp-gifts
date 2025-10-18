@@ -58,7 +58,7 @@ class BP_Gifts_Message_Service implements Message_Service_Interface {
 	 * @param int $gift_id   Gift ID.
 	 * @return bool True on success, false on failure.
 	 */
-	public function attach_gift_to_thread( int $thread_id, int $gift_id ) {
+	public function attach_gift_to_thread( int $thread_id, int $gift_id, $message_object = null ) {
 		// Validate inputs
 		if ( $thread_id <= 0 || $gift_id <= 0 ) {
 			return false;
@@ -80,8 +80,62 @@ class BP_Gifts_Message_Service implements Message_Service_Interface {
 			return false;
 		}
 
+		// Handle myCred point deduction if enabled
+		if ( BP_Gifts_Settings::is_mycred_enabled() ) {
+			try {
+				$loader = BP_Gifts_Loader_V2::instance();
+				$mycred_service = $loader->get_service( 'mycred_service' );
+				$gift_cost = $mycred_service->get_gift_cost( $gift_id );
+				
+				if ( $gift_cost > 0 ) {
+					// Double-check affordability
+					if ( ! $mycred_service->user_can_afford( $current_user_id, $gift_cost ) ) {
+						return false;
+					}
+
+					// Get gift details for transaction
+					$gift = $this->gift_service->get_gift( $gift_id );
+					$gift_name = $gift ? $gift['name'] : __( 'Unknown Gift', 'bp-gifts' );
+
+					// Get recipient information from thread
+					$recipient_id = 0;
+					$thread = new BP_Messages_Thread( $thread_id );
+					if ( ! empty( $thread->recipients ) ) {
+						foreach ( $thread->recipients as $recipient ) {
+							if ( $recipient->user_id != $current_user_id ) {
+								$recipient_id = $recipient->user_id;
+								break;
+							}
+						}
+					}
+
+					// Deduct points
+					$deduction_data = array(
+						'gift_name' => $gift_name,
+						'recipient_id' => $recipient_id,
+						'message_id' => $message_object ? $message_object->id : 0,
+						'thread_id' => $thread_id,
+					);
+
+					if ( ! $mycred_service->deduct_points( $current_user_id, $gift_cost, $gift_id, $deduction_data ) ) {
+						error_log( 'BP Gifts: Failed to deduct points for thread gift ' . $gift_id );
+						return false;
+					}
+				}
+			} catch ( Exception $e ) {
+				error_log( 'BP Gifts: myCred error during thread gift attachment - ' . $e->getMessage() );
+				return false;
+			}
+		}
+
 		// Attach gift to thread using WordPress metadata
 		$result = add_metadata( 'bp_messages_thread', $thread_id, '_bp_thread_gift', $gift_id, true );
+		
+		// Store sender information
+		if ( $result !== false ) {
+			add_metadata( 'bp_messages_thread', $thread_id, '_bp_thread_gift_sender', $current_user_id, true );
+			add_metadata( 'bp_messages_thread', $thread_id, '_bp_thread_gift_date', current_time( 'mysql' ), true );
+		}
 
 		/**
 		 * Fires after a gift is attached to a thread.
@@ -120,6 +174,58 @@ class BP_Gifts_Message_Service implements Message_Service_Interface {
 	}
 
 	/**
+	 * Get all gifts in a thread (both thread-level and message-level).
+	 *
+	 * @since 2.1.0
+	 * @param int $thread_id Thread ID.
+	 * @return array Array of gifts with metadata.
+	 */
+	public function get_thread_gifts( int $thread_id ) {
+		if ( $thread_id <= 0 ) {
+			return array();
+		}
+
+		$gifts = array();
+
+		// Get thread-level gift if any
+		$thread_gift_id = get_metadata( 'bp_messages_thread', $thread_id, '_bp_thread_gift', true );
+		if ( $thread_gift_id ) {
+			$gift = $this->gift_service->get_gift( absint( $thread_gift_id ) );
+			if ( $gift ) {
+				$gifts[] = array(
+					'gift' => $gift,
+					'type' => 'thread',
+					'sender_id' => get_metadata( 'bp_messages_thread', $thread_id, '_bp_thread_gift_sender', true ),
+					'sent_date' => get_metadata( 'bp_messages_thread', $thread_id, '_bp_thread_gift_date', true )
+				);
+			}
+		}
+
+		// Get all messages in the thread
+		$messages = BP_Messages_Thread::get_messages( $thread_id );
+		
+		if ( ! empty( $messages ) ) {
+			foreach ( $messages as $message ) {
+				$gift_id = get_metadata( 'bp_messages_message', $message->id, '_bp_message_gift', true );
+				if ( $gift_id ) {
+					$gift = $this->gift_service->get_gift( absint( $gift_id ) );
+					if ( $gift ) {
+						$gifts[] = array(
+							'gift' => $gift,
+							'type' => 'message',
+							'message_id' => $message->id,
+							'sender_id' => $message->sender_id,
+							'sent_date' => $message->date_sent
+						);
+					}
+				}
+			}
+		}
+
+		return $gifts;
+	}
+
+	/**
 	 * Check if user can access a message thread.
 	 *
 	 * @since 2.1.0
@@ -153,7 +259,7 @@ class BP_Gifts_Message_Service implements Message_Service_Interface {
 	 * @param int $gift_id    Gift ID.
 	 * @return bool True on success, false on failure.
 	 */
-	public function attach_gift_to_message( int $message_id, int $gift_id ) {
+	public function attach_gift_to_message( int $message_id, int $gift_id, $message_object = null ) {
 		// Validate inputs
 		if ( $message_id <= 0 || $gift_id <= 0 ) {
 			return false;
@@ -170,8 +276,64 @@ class BP_Gifts_Message_Service implements Message_Service_Interface {
 			return false;
 		}
 
+		// Handle myCred point deduction if enabled
+		if ( BP_Gifts_Settings::is_mycred_enabled() ) {
+			try {
+				$loader = BP_Gifts_Loader_V2::instance();
+				$mycred_service = $loader->get_service( 'mycred_service' );
+				$gift_cost = $mycred_service->get_gift_cost( $gift_id );
+				
+				if ( $gift_cost > 0 ) {
+					// Double-check affordability
+					if ( ! $mycred_service->user_can_afford( $current_user_id, $gift_cost ) ) {
+						return false;
+					}
+
+					// Get gift details for transaction
+					$gift = $this->gift_service->get_gift( $gift_id );
+					$gift_name = $gift ? $gift['name'] : __( 'Unknown Gift', 'bp-gifts' );
+
+					// Get recipient information
+					$recipient_id = 0;
+					if ( $message_object && isset( $message_object->thread_id ) ) {
+						$thread = new BP_Messages_Thread( $message_object->thread_id );
+						if ( ! empty( $thread->recipients ) ) {
+							foreach ( $thread->recipients as $recipient ) {
+								if ( $recipient->user_id != $current_user_id ) {
+									$recipient_id = $recipient->user_id;
+									break;
+								}
+							}
+						}
+					}
+
+					// Deduct points
+					$deduction_data = array(
+						'gift_name' => $gift_name,
+						'recipient_id' => $recipient_id,
+						'message_id' => $message_id,
+						'thread_id' => $message_object ? $message_object->thread_id : 0,
+					);
+
+					if ( ! $mycred_service->deduct_points( $current_user_id, $gift_cost, $gift_id, $deduction_data ) ) {
+						error_log( 'BP Gifts: Failed to deduct points for gift ' . $gift_id );
+						return false;
+					}
+				}
+			} catch ( Exception $e ) {
+				error_log( 'BP Gifts: myCred error during message gift attachment - ' . $e->getMessage() );
+				return false;
+			}
+		}
+
 		// Attach gift to message
 		$result = bp_messages_update_meta( $message_id, $this->meta_key, $gift_id );
+		
+		// Store sender information
+		if ( $result !== false ) {
+			bp_messages_update_meta( $message_id, '_bp_message_gift_sender', $current_user_id );
+			bp_messages_update_meta( $message_id, '_bp_message_gift_date', current_time( 'mysql' ) );
+		}
 
 		/**
 		 * Fires after a gift is attached to a message.
@@ -294,13 +456,37 @@ class BP_Gifts_Message_Service implements Message_Service_Interface {
 		}
 
 		$gift_id = absint( $_POST['bp_gift_id'] );
+		$sender_id = get_current_user_id();
+
+		// Check myCred affordability if enabled
+		if ( BP_Gifts_Settings::is_mycred_enabled() ) {
+			try {
+				$loader = BP_Gifts_Loader_V2::instance();
+				$mycred_service = $loader->get_service( 'mycred_service' );
+				$gift_cost = $mycred_service->get_gift_cost( $gift_id );
+				
+				if ( $gift_cost > 0 && ! $mycred_service->user_can_afford( $sender_id, $gift_cost ) ) {
+					// Log insufficient funds attempt
+					error_log( sprintf( 
+						'BP Gifts: User %d attempted to send gift %d but has insufficient funds (cost: %s)', 
+						$sender_id, 
+						$gift_id, 
+						$gift_cost 
+					));
+					return false;
+				}
+			} catch ( Exception $e ) {
+				error_log( 'BP Gifts: myCred service error during gift processing - ' . $e->getMessage() );
+				return false;
+			}
+		}
 		
 		// Check if this should be attached to thread instead of message
 		if ( isset( $_POST['bp_gift_thread_id'] ) && is_numeric( $_POST['bp_gift_thread_id'] ) ) {
 			$thread_id = absint( $_POST['bp_gift_thread_id'] );
-			return $this->attach_gift_to_thread( $thread_id, $gift_id );
+			return $this->attach_gift_to_thread( $thread_id, $gift_id, $message );
 		}
 		
-		return $this->attach_gift_to_message( $message->id, $gift_id );
+		return $this->attach_gift_to_message( $message->id, $gift_id, $message );
 	}
 }

@@ -105,6 +105,22 @@ class BP_Gifts_Modal_Service implements Modal_Service_Interface {
 
 		$args = wp_parse_args( $args, $defaults );
 
+		// Get myCred service and user balance if enabled
+		$mycred_enabled = BP_Gifts_Settings::is_mycred_enabled();
+		$user_balance = 0;
+		$point_type_name = '';
+
+		if ( $mycred_enabled ) {
+			try {
+				$loader = BP_Gifts_Loader_V2::instance();
+				$mycred_service = $loader->get_service( 'mycred_service' );
+				$user_balance = $mycred_service->get_user_balance( get_current_user_id() );
+				$point_type_name = $mycred_service->get_point_type_name( false );
+			} catch ( Exception $e ) {
+				$mycred_enabled = false;
+			}
+		}
+
 		ob_start();
 		?>
 		<div 
@@ -117,6 +133,20 @@ class BP_Gifts_Modal_Service implements Modal_Service_Interface {
 			<div class="bp-modal-inner">
 				<div class="bp-modal-header">
 					<h3 id="bp-gifts-modal-title"><?php echo esc_html( $args['title'] ); ?></h3>
+					<?php if ( $mycred_enabled ) : ?>
+						<div class="bp-gifts-user-balance">
+							<span class="bp-balance-label"><?php esc_html_e( 'Your Balance:', 'bp-gifts' ); ?></span>
+							<span class="bp-balance-amount" id="bp-user-balance" data-balance="<?php echo esc_attr( $user_balance ); ?>">
+								<?php 
+								try {
+									echo esc_html( $mycred_service->format_points( $user_balance ) );
+								} catch ( Exception $e ) {
+									echo esc_html( number_format( $user_balance ) . ' ' . $point_type_name );
+								}
+								?>
+							</span>
+						</div>
+					<?php endif; ?>
 					<button 
 						type="button" 
 						class="bp-modal-close" 
@@ -134,7 +164,7 @@ class BP_Gifts_Modal_Service implements Modal_Service_Interface {
 					<?php if ( ! empty( $gifts ) ) : ?>
 						<ul class="list" role="grid" aria-label="<?php esc_attr_e( 'Available gifts', 'bp-gifts' ); ?>">
 							<?php foreach ( $gifts as $gift ) : ?>
-								<?php echo $this->render_gift_item( $gift ); ?>
+								<?php echo $this->render_gift_item( $gift, array( 'show_mycred' => $mycred_enabled ) ); ?>
 							<?php endforeach; ?>
 						</ul>
 					<?php else : ?>
@@ -162,6 +192,7 @@ class BP_Gifts_Modal_Service implements Modal_Service_Interface {
 	public function render_gift_item( array $gift, array $args = array() ) {
 		$defaults = array(
 			'show_categories' => false,
+			'show_mycred' => false,
 		);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -171,22 +202,62 @@ class BP_Gifts_Modal_Service implements Modal_Service_Interface {
 			$categories_text = ' (' . implode( ', ', $gift['categories'] ) . ')';
 		}
 
+		// Get myCred information if enabled
+		$gift_cost = 0;
+		$can_afford = true;
+		$cost_display = '';
+		
+		if ( $args['show_mycred'] && BP_Gifts_Settings::is_mycred_enabled() ) {
+			try {
+				$loader = BP_Gifts_Loader_V2::instance();
+				$mycred_service = $loader->get_service( 'mycred_service' );
+				$gift_cost = $mycred_service->get_gift_cost( $gift['id'] );
+				$can_afford = $mycred_service->user_can_afford( get_current_user_id(), $gift_cost );
+				$cost_display = $mycred_service->format_points( $gift_cost, false );
+			} catch ( Exception $e ) {
+				// Fallback if service fails
+			}
+		}
+
+		$item_classes = array( 'bp-gift-item' );
+		if ( ! $can_afford && $gift_cost > 0 ) {
+			$item_classes[] = 'bp-gift-insufficient-funds';
+		}
+		if ( $gift_cost > 0 ) {
+			$item_classes[] = 'bp-gift-has-cost';
+		}
+
 		$aria_label = sprintf(
 			/* translators: %s: Gift name */
 			__( 'Select gift: %s', 'bp-gifts' ),
 			$gift['name'] . $categories_text
 		);
 
+		if ( $gift_cost > 0 ) {
+			$aria_label .= sprintf(
+				/* translators: %s: cost */
+				__( ' (Cost: %s)', 'bp-gifts' ),
+				$cost_display
+			);
+		}
+
+		if ( ! $can_afford && $gift_cost > 0 ) {
+			$aria_label .= ' ' . __( '(Insufficient funds)', 'bp-gifts' );
+		}
+
 		ob_start();
 		?>
-		<li class="bp-gift-item" role="gridcell">
+		<li class="<?php echo esc_attr( implode( ' ', $item_classes ) ); ?>" role="gridcell">
 			<button 
 				type="button"
 				class="bp-gift-item-ele" 
 				data-id="<?php echo esc_attr( $gift['id'] ); ?>" 
 				data-image="<?php echo esc_url( $gift['image'] ); ?>"
 				data-name="<?php echo esc_attr( $gift['name'] ); ?>"
+				data-cost="<?php echo esc_attr( $gift_cost ); ?>"
+				data-can-afford="<?php echo esc_attr( $can_afford ? '1' : '0' ); ?>"
 				aria-label="<?php echo esc_attr( $aria_label ); ?>"
+				<?php echo $can_afford ? '' : 'disabled'; ?>
 				tabindex="0">
 				<img 
 					src="<?php echo esc_url( $gift['image'] ); ?>" 
@@ -198,6 +269,23 @@ class BP_Gifts_Modal_Service implements Modal_Service_Interface {
 				<?php if ( $args['show_categories'] && ! empty( $gift['categories'] ) ) : ?>
 					<div class="bp-gift-categories">
 						<?php echo esc_html( implode( ', ', $gift['categories'] ) ); ?>
+					</div>
+				<?php endif; ?>
+				<?php if ( $args['show_mycred'] && $gift_cost > 0 ) : ?>
+					<div class="bp-gift-cost">
+						<?php if ( $can_afford ) : ?>
+							<span class="bp-cost-amount"><?php echo esc_html( $cost_display ); ?></span>
+						<?php else : ?>
+							<span class="bp-cost-insufficient">
+								<?php echo esc_html( $cost_display ); ?>
+								<small><?php esc_html_e( 'Insufficient funds', 'bp-gifts' ); ?></small>
+							</span>
+						<?php endif; ?>
+					</div>
+				<?php endif; ?>
+				<?php if ( ! $can_afford && $gift_cost > 0 ) : ?>
+					<div class="bp-gift-overlay" aria-hidden="true">
+						<span class="bp-insufficient-icon">🚫</span>
 					</div>
 				<?php endif; ?>
 			</button>
@@ -342,6 +430,81 @@ class BP_Gifts_Modal_Service implements Modal_Service_Interface {
 						<?php endif; ?>
 					</div>
 				</div>
+			</div>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Render all gifts in a thread.
+	 *
+	 * @since 2.1.0
+	 * @param array $gifts Array of gifts with metadata.
+	 * @return string HTML output.
+	 */
+	public function render_thread_gifts( array $gifts ) {
+		if ( empty( $gifts ) ) {
+			return '';
+		}
+
+		ob_start();
+		?>
+		<div class="bp-gifts-thread-summary" role="region" aria-label="<?php esc_attr_e( 'Gifts in this conversation', 'bp-gifts' ); ?>">
+			<div class="bp-gifts-thread-header">
+				<span class="bp-gifts-icon" aria-hidden="true">🎁</span>
+				<h3 class="bp-gifts-thread-title">
+					<?php
+					printf(
+						/* translators: %d: number of gifts */
+						_n( '%d Gift in this conversation', '%d Gifts in this conversation', count( $gifts ), 'bp-gifts' ),
+						count( $gifts )
+					);
+					?>
+				</h3>
+			</div>
+			<div class="bp-gifts-thread-list">
+				<?php foreach ( $gifts as $gift_data ) : ?>
+					<?php
+					$gift = $gift_data['gift'];
+					$sender_name = bp_core_get_user_displayname( $gift_data['sender_id'] );
+					$is_current_user = $gift_data['sender_id'] == bp_loggedin_user_id();
+					?>
+					<div class="bp-gift-thread-item <?php echo $is_current_user ? 'sent' : 'received'; ?>">
+						<div class="bp-gift-thread-meta">
+							<span class="bp-gift-sender">
+								<?php
+								if ( $is_current_user ) {
+									esc_html_e( 'You sent:', 'bp-gifts' );
+								} else {
+									printf(
+										/* translators: %s: sender name */
+										esc_html__( '%s sent:', 'bp-gifts' ),
+										esc_html( $sender_name )
+									);
+								}
+								?>
+							</span>
+							<time class="bp-gift-date" datetime="<?php echo esc_attr( $gift_data['sent_date'] ); ?>">
+								<?php echo esc_html( bp_format_time( strtotime( $gift_data['sent_date'] ) ) ); ?>
+							</time>
+						</div>
+						<div class="bp-gift-thread-content">
+							<img src="<?php echo esc_url( $gift['image'] ); ?>" 
+								 alt="<?php echo esc_attr( $gift['name'] ); ?>" 
+								 class="bp-gift-thread-image" />
+							<div class="bp-gift-thread-info">
+								<h4 class="bp-gift-thread-name"><?php echo esc_html( $gift['name'] ); ?></h4>
+								<?php if ( ! empty( $gift['description'] ) ) : ?>
+									<p class="bp-gift-thread-description"><?php echo esc_html( $gift['description'] ); ?></p>
+								<?php endif; ?>
+								<?php if ( ! empty( $gift['category'] ) ) : ?>
+									<span class="bp-gift-category"><?php echo esc_html( $gift['category'] ); ?></span>
+								<?php endif; ?>
+							</div>
+						</div>
+					</div>
+				<?php endforeach; ?>
 			</div>
 		</div>
 		<?php

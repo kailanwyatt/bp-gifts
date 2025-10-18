@@ -910,3 +910,641 @@ li.bp-gift-item {
 		font-size: 20px;
 	}
 }
+
+/* ============================================
+   Thread Gifts Display
+   ============================================ */
+
+.bp-gifts-thread-summary {
+	background: #f8f9fa;
+	border: 1px solid #e1e5e9;
+	border-radius: 8px;
+	margin: 20px 0;
+	padding: 20px;
+	position: relative;
+}
+
+.bp-gifts-thread-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 20px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #dee2e6;
+}
+
+.bp-gifts-icon {
+	font-size: 24px;
+	line-height: 1;
+}
+
+.bp-gifts-thread-title {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+	color: #23282d;
+}
+
+.bp-gifts-thread-list {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.bp-gift-thread-item {
+	background: white;
+	border: 1px solid #e1e5e9;
+	border-radius: 6px;
+	padding: 16px;
+	position: relative;
+	transition: all 0.2s ease;
+}
+
+.bp-gift-thread-item:hover {
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	transform: translateY(-1px);
+}
+
+.bp-gift-thread-item.sent {
+	background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
+	border-color: #2196f3;
+}
+
+.bp-gift-thread-item.sent::before {
+	content: "↗";
+	position: absolute;
+	top: 12px;
+	inset-inline-end: 12px;
+	color: #2196f3;
+	font-weight: bold;
+	font-size: 16px;
+}
+
+.bp-gift-thread-item.received {
+	background: linear-gradient(135deg, #f3e5f5 0%, #f8f9fa 100%);
+	border-color: #9c27b0;
+}
+
+.bp-gift-thread-item.received::before {
+	content: "↙";
+	position: absolute;
+	top: 12px;
+	inset-inline-end: 12px;
+	color: #9c27b0;
+	font-weight: bold;
+	font-size: 16px;
+}
+
+.bp-gift-thread-meta {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 12px;
+	font-size: 14px;
+}
+
+.bp-gift-sender {
+	font-weight: 600;
+	color: #495057;
+}
+
+.bp-gift-date {
+	color: #6c757d;
+	font-size: 13px;
+}
+
+.bp-gift-thread-content {
+	display: flex;
+	gap: 16px;
+	align-items: flex-start;
+}
+
+.bp-gift-thread-image {
+	width: 60px;
+	height: 60px;
+	object-fit: cover;
+	border-radius: 6px;
+	border: 1px solid #dee2e6;
+	flex-shrink: 0;
+}
+
+.bp-gift-thread-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.bp-gift-thread-name {
+	margin: 0 0 8px 0;
+	font-size: 16px;
+	font-weight: 600;
+	color: #23282d;
+	word-wrap: break-word;
+}
+
+.bp-gift-thread-description {
+	margin: 0 0 8px 0;
+	color: #495057;
+	font-size: 14px;
+	line-height: 1.4;
+}
+
+.bp-gift-category {
+	display: inline-block;
+	background: #e9ecef;
+	color: #495057;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+/* RTL Support for Thread Gifts */
+[dir="rtl"] .bp-gift-thread-item.sent::before,
+[dir="rtl"] .bp-gift-thread-item.received::before {
+	inset-inline-end: auto;
+	inset-inline-start: 12px;
+}
+
+[dir="rtl"] .bp-gift-thread-item.sent::before {
+	content: "↖";
+}
+
+[dir="rtl"] .bp-gift-thread-item.received::before {
+	content: "↘";
+}
+
+/* Mobile Responsive for Thread Gifts */
+@media (max-width: 768px) {
+	.bp-gifts-thread-summary {
+		margin: 15px 0;
+		padding: 15px;
+	}
+	
+	.bp-gifts-thread-header {
+		margin-bottom: 15px;
+		padding-bottom: 12px;
+	}
+	
+	.bp-gifts-thread-title {
+		font-size: 16px;
+	}
+	
+	.bp-gift-thread-item {
+		padding: 12px;
+	}
+	
+	.bp-gift-thread-content {
+		gap: 12px;
+	}
+	
+	.bp-gift-thread-image {
+		width: 50px;
+		height: 50px;
+	}
+	
+	.bp-gift-thread-name {
+		font-size: 15px;
+	}
+	
+	.bp-gift-thread-meta {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 4px;
+	}
+}
+
+/* ========================================
+   MYCRED INTEGRATION STYLES
+   ======================================== */
+
+/* Point Balance Display */
+.bp-gifts-balance-display {
+	background: linear-gradient(135deg, #4CAF50, #45a049);
+	color: white;
+	padding: 12px 20px;
+	border-radius: 8px;
+	text-align: center;
+	margin-bottom: 20px;
+	box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+	font-weight: 600;
+}
+
+.bp-gifts-balance-display .balance-label {
+	font-size: 14px;
+	opacity: 0.9;
+	margin-bottom: 4px;
+	display: block;
+}
+
+.bp-gifts-balance-display .balance-amount {
+	font-size: 24px;
+	font-weight: 700;
+	margin: 0;
+}
+
+/* Gift Cost Display */
+.bp-gift-cost {
+	background: #f8f9fa;
+	border: 2px solid #e9ecef;
+	border-radius: 6px;
+	padding: 8px 12px;
+	margin-top: 8px;
+	text-align: center;
+	font-weight: 600;
+	color: #495057;
+	transition: all 0.3s ease;
+}
+
+.bp-gift-cost.affordable {
+	border-color: #28a745;
+	background: #d4edda;
+	color: #155724;
+}
+
+.bp-gift-cost.unaffordable {
+	border-color: #dc3545;
+	background: #f8d7da;
+	color: #721c24;
+}
+
+.bp-gift-cost-amount {
+	font-size: 16px;
+	font-weight: 700;
+}
+
+.bp-gift-cost-label {
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin-bottom: 2px;
+	opacity: 0.8;
+}
+
+/* Insufficient Funds Warning */
+.bp-gifts-insufficient-funds {
+	background: linear-gradient(135deg, #dc3545, #c82333);
+	color: white;
+	padding: 15px 20px;
+	border-radius: 8px;
+	margin: 15px 0;
+	text-align: center;
+	box-shadow: 0 3px 12px rgba(220, 53, 69, 0.3);
+	font-weight: 600;
+	animation: shake 0.6s ease-in-out;
+}
+
+.bp-gifts-insufficient-funds .warning-icon {
+	font-size: 20px;
+	margin-right: 8px;
+	vertical-align: middle;
+}
+
+.bp-gifts-insufficient-funds .warning-message {
+	font-size: 16px;
+	margin: 0;
+}
+
+.bp-gifts-insufficient-funds .warning-suggestion {
+	font-size: 14px;
+	margin-top: 8px;
+	opacity: 0.9;
+}
+
+/* Animation for insufficient funds */
+@keyframes shake {
+	0%, 100% { transform: translateX(0); }
+	10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+	20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Gift Item States with myCred */
+.bp-gift-item-ele.unaffordable {
+	opacity: 0.6;
+	filter: grayscale(50%);
+	pointer-events: none;
+	position: relative;
+}
+
+.bp-gift-item-ele.unaffordable::after {
+	content: "💰";
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	font-size: 20px;
+	background: rgba(220, 53, 69, 0.9);
+	color: white;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+	border: 2px solid white;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.bp-gift-item-ele.affordable {
+	border: 2px solid #28a745;
+	box-shadow: 0 2px 12px rgba(40, 167, 69, 0.2);
+}
+
+.bp-gift-item-ele.affordable:hover {
+	border-color: #20c997;
+	box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
+	transform: translateY(-2px);
+}
+
+/* Point Transaction History */
+.bp-gifts-transaction-history {
+	background: white;
+	border: 1px solid #dee2e6;
+	border-radius: 8px;
+	padding: 20px;
+	margin-top: 20px;
+}
+
+.bp-gifts-transaction-header {
+	font-size: 18px;
+	font-weight: 600;
+	margin-bottom: 15px;
+	color: #495057;
+	border-bottom: 2px solid #e9ecef;
+	padding-bottom: 10px;
+}
+
+.bp-gifts-transaction-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 0;
+	border-bottom: 1px solid #f8f9fa;
+}
+
+.bp-gifts-transaction-item:last-child {
+	border-bottom: none;
+}
+
+.bp-gifts-transaction-details {
+	flex: 1;
+}
+
+.bp-gifts-transaction-gift {
+	font-weight: 600;
+	color: #495057;
+}
+
+.bp-gifts-transaction-date {
+	font-size: 12px;
+	color: #6c757d;
+	margin-top: 2px;
+}
+
+.bp-gifts-transaction-amount {
+	font-weight: 700;
+	font-size: 16px;
+}
+
+.bp-gifts-transaction-amount.deduction {
+	color: #dc3545;
+}
+
+.bp-gifts-transaction-amount.award {
+	color: #28a745;
+}
+
+/* Modal myCred Enhancements */
+.bp-modal-mycred-info {
+	background: linear-gradient(135deg, #6f42c1, #5a32a3);
+	color: white;
+	padding: 15px 20px;
+	margin: -2em -2em 20px -2em;
+	border-radius: 8px 8px 0 0;
+}
+
+.bp-modal-mycred-balance {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.bp-modal-balance-label {
+	font-size: 14px;
+	opacity: 0.9;
+}
+
+.bp-modal-balance-amount {
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.bp-modal-mycred-note {
+	font-size: 12px;
+	opacity: 0.8;
+	text-align: center;
+	font-style: italic;
+}
+
+/* Gift Selection with Points */
+.bp-gifts-with-points .bp-gift-item-ele {
+	position: relative;
+	transition: all 0.3s ease;
+}
+
+.bp-gifts-with-points .bp-gift-cost {
+	position: absolute;
+	bottom: 8px;
+	left: 8px;
+	right: 8px;
+	margin-top: 0;
+	font-size: 12px;
+	padding: 4px 8px;
+}
+
+/* Loading States */
+.bp-gifts-loading-points {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border: 2px solid #f3f3f3;
+	border-top: 2px solid #007cba;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	margin-right: 8px;
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+.bp-gifts-balance-loading {
+	background: #f8f9fa;
+	color: #6c757d;
+	border: 2px dashed #dee2e6;
+}
+
+.bp-gifts-balance-loading .balance-amount {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Error States */
+.bp-gifts-error-message {
+	background: #f8d7da;
+	color: #721c24;
+	border: 1px solid #f5c6cb;
+	border-radius: 6px;
+	padding: 12px 16px;
+	margin: 15px 0;
+	font-weight: 500;
+}
+
+.bp-gifts-error-icon {
+	margin-right: 8px;
+	font-size: 16px;
+}
+
+/* Success States */
+.bp-gifts-success-message {
+	background: #d4edda;
+	color: #155724;
+	border: 1px solid #c3e6cb;
+	border-radius: 6px;
+	padding: 12px 16px;
+	margin: 15px 0;
+	font-weight: 500;
+}
+
+.bp-gifts-success-icon {
+	margin-right: 8px;
+	font-size: 16px;
+}
+
+/* RTL Support for myCred Elements */
+[dir="rtl"] .bp-gifts-balance-display .balance-amount,
+[dir="rtl"] .bp-modal-balance-amount {
+	text-align: right;
+}
+
+[dir="rtl"] .bp-gift-item-ele.unaffordable::after {
+	right: auto;
+	left: 10px;
+}
+
+[dir="rtl"] .bp-gifts-with-points .bp-gift-cost {
+	left: auto;
+	right: 8px;
+}
+
+[dir="rtl"] .bp-gifts-transaction-item {
+	flex-direction: row-reverse;
+}
+
+[dir="rtl"] .bp-gifts-insufficient-funds .warning-icon {
+	margin-right: 0;
+	margin-left: 8px;
+}
+
+[dir="rtl"] .bp-gifts-loading-points {
+	margin-right: 0;
+	margin-left: 8px;
+}
+
+[dir="rtl"] .bp-gifts-error-icon,
+[dir="rtl"] .bp-gifts-success-icon {
+	margin-right: 0;
+	margin-left: 8px;
+}
+
+/* Mobile Responsive for myCred Elements */
+@media (max-width: 768px) {
+	.bp-gifts-balance-display {
+		padding: 10px 15px;
+		margin-bottom: 15px;
+	}
+	
+	.bp-gifts-balance-display .balance-amount {
+		font-size: 20px;
+	}
+	
+	.bp-modal-mycred-info {
+		margin: -2em -1em 15px -1em;
+		padding: 12px 15px;
+	}
+	
+	.bp-modal-balance-amount {
+		font-size: 18px;
+	}
+	
+	.bp-gifts-insufficient-funds {
+		padding: 12px 15px;
+		margin: 12px 0;
+	}
+	
+	.bp-gifts-insufficient-funds .warning-message {
+		font-size: 14px;
+	}
+	
+	.bp-gifts-transaction-item {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+	}
+	
+	.bp-gifts-transaction-amount {
+		font-size: 14px;
+	}
+	
+	.bp-gift-item-ele.unaffordable::after {
+		width: 25px;
+		height: 25px;
+		font-size: 12px;
+		top: 5px;
+		right: 5px;
+	}
+	
+	[dir="rtl"] .bp-gift-item-ele.unaffordable::after {
+		right: auto;
+		left: 5px;
+	}
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+	.bp-gifts-balance-display {
+		background: linear-gradient(135deg, #2d5016, #3d6b1f);
+	}
+	
+	.bp-gift-cost {
+		background: #2d3748;
+		border-color: #4a5568;
+		color: #e2e8f0;
+	}
+	
+	.bp-gift-cost.affordable {
+		background: #1a202c;
+		border-color: #38a169;
+		color: #68d391;
+	}
+	
+	.bp-gifts-transaction-history {
+		background: #2d3748;
+		border-color: #4a5568;
+	}
+	
+	.bp-gifts-transaction-header {
+		color: #e2e8f0;
+		border-color: #4a5568;
+	}
+	
+	.bp-gifts-transaction-gift {
+		color: #e2e8f0;
+	}
+	
+	.bp-modal-mycred-info {
+		background: linear-gradient(135deg, #553c9a, #44337a);
+	}
+}
