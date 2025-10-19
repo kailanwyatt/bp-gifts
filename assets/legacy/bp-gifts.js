@@ -286,6 +286,10 @@ jQuery(document).ready(function($) {
 					   $('#thread_id').val() ||
 					   $('.thread-content').data('thread-id');
 
+		if (threadId && bp_gifts_vars?.thread_id && threadId != bp_gifts_vars.thread_id	) {
+			threadId = bp_gifts_vars.thread_id;
+		}
+
 		// Try to extract from URL if available
 		if (!threadId) {
 			var match = window.location.href.match(/thread_id=(\d+)/);

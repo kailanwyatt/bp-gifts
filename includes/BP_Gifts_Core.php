@@ -152,6 +152,12 @@ class BP_Gifts_Core {
 		add_action( 'bp_after_message_reply_box', array( $this, 'render_gift_composer' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'messages_message_after_save', array( $this, 'process_gift_attachment' ), 12, 1 );
+		
+		// Cookie-based gift handling is done via JavaScript and process_gift_post_message
+		
+		// Add AJAX handler for processing gifts after message is sent (cookie-based)
+		add_action( 'wp_ajax_bp_gifts_process_post_message', array( $this, 'process_gift_post_message' ) );
+		
 		add_action( 'bp_after_message_content', array( $this, 'display_gift' ) );
 		add_action( 'bp_before_message_thread_content', array( $this, 'display_thread_gift' ) );
 		add_action( 'save_post', array( $this, 'clear_gift_cache' ), 12, 2 );
@@ -531,6 +537,19 @@ class BP_Gifts_Core {
 			true
 		);
 
+		// Get current thread ID if we're on a messages thread view page
+		$current_thread_id = 0;
+		if ( bp_is_messages_component() && bp_is_current_action( 'view' ) ) {
+			$thread_id = (int) bp_action_variable( 0 );
+			if ( $thread_id && messages_is_valid_thread( $thread_id ) && messages_check_thread_access( $thread_id ) ) {
+				$current_thread_id = $thread_id;
+				
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( 'BP Gifts: Detected thread ID ' . $current_thread_id . ' for JavaScript localization' );
+				}
+			}
+		}
+
 		// Localize script
 		wp_localize_script(
 			'bp-gifts-main',
@@ -538,6 +557,7 @@ class BP_Gifts_Core {
 			array(
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
 				'nonce'    => wp_create_nonce( 'bp_gifts_nonce' ),
+				'thread_id' => $current_thread_id,
 				'showing_all_text' => __( 'Showing all %d gifts', 'bp-gifts' ),
 				'showing_filtered_text' => __( 'Showing %1$d of %2$d gifts', 'bp-gifts' ),
 				'search_results_text' => __( '%d gifts found', 'bp-gifts' ),
@@ -574,7 +594,7 @@ class BP_Gifts_Core {
 	}
 
 	/**
-	 * Process gift attachment from form submission.
+	 * Process gift from message object.
 	 *
 	 * @since 2.2.0
 	 * @param object $message Message object.
@@ -582,6 +602,90 @@ class BP_Gifts_Core {
 	public function process_gift_attachment( $message ) {
 		$messages = new BP_Gifts_Messages();
 		$messages->process_gift_from_submission( $message );
+	}
+
+
+
+	/**
+	 * Process gift data after message is sent (cookie-based approach).
+	 *
+	 * @since 2.2.0
+	 */
+	public function process_gift_post_message() {
+		// Verify nonce
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'bp_gifts_nonce' ) ) {
+			wp_send_json_error( array( 'message' => 'Invalid nonce' ) );
+		}
+
+		// Check if gift data was provided
+		if ( ! isset( $_POST['gift_data'] ) || empty( $_POST['gift_data'] ) ) {
+			wp_send_json_error( array( 'message' => 'No gift data provided' ) );
+		}
+
+		$gift_data = $_POST['gift_data'];
+		
+		// Validate gift data structure
+		if ( ! isset( $gift_data['gift_id'] ) || ! $gift_data['gift_id'] ) {
+			wp_send_json_error( array( 'message' => 'Invalid gift data' ) );
+		}
+
+		$gift_id = absint( $gift_data['gift_id'] );
+		$thread_id = isset( $gift_data['thread_id'] ) ? absint( $gift_data['thread_id'] ) : 0;
+		
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( 'BP Gifts: Processing post-message gift - Gift ID: ' . $gift_id . ', Thread ID: ' . $thread_id );
+		}
+
+		// Get the most recent message in the thread
+		global $wpdb;
+		$bp = buddypress();
+		
+		$sql = $wpdb->prepare(
+			"SELECT id, sender_id, subject, date_sent, thread_id 
+			 FROM {$bp->messages->table_name_messages} 
+			 WHERE thread_id = %d 
+			 ORDER BY date_sent DESC 
+			 LIMIT 1",
+			$thread_id
+		);
+		
+		$message = $wpdb->get_row( $sql );
+		
+		if ( ! $message ) {
+			wp_send_json_error( array( 'message' => 'Message not found' ) );
+		}
+
+		// Create a message object for compatibility
+		$message_obj = new stdClass();
+		$message_obj->id = $message->id;
+		$message_obj->sender_id = $message->sender_id;
+		$message_obj->subject = $message->subject;
+		$message_obj->date_sent = $message->date_sent;
+		$message_obj->thread_id = $message->thread_id;
+
+		// Process the gift
+		$messages = new BP_Gifts_Messages();
+		
+		// Attach gift to message
+		$messages->attach_gift_to_message( $message_obj->id, $gift_id );
+		
+		// Create gift relationship
+		$relationship_result = $messages->create_gift_relationship( $message_obj, $gift_id );
+
+		if ( $relationship_result ) {
+			// Deduct points if myCred is enabled
+			if ( BP_Gifts_Settings::is_mycred_enabled() ) {
+				$mycred = new BP_Gifts_MyCred();
+				$mycred->charge_user_for_gift( $message_obj->sender_id, $gift_id );
+			}
+			
+			wp_send_json_success( array( 
+				'message' => 'Gift processed successfully',
+				'relationships' => is_array( $relationship_result ) ? count( $relationship_result ) : 1
+			) );
+		} else {
+			wp_send_json_error( array( 'message' => 'Failed to create gift relationship' ) );
+		}
 	}
 
 	/**

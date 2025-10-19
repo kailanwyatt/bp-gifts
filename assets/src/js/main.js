@@ -128,14 +128,38 @@ jQuery(document).ready(function($) {
 			}
 
 			// Check if we're in thread context
-			var isThreadContext = $('body').hasClass('messages-thread') || 
+			var isThreadContext = bp_gifts_vars.thread_id || $('body').hasClass('messages-thread') || 
 								  $('.thread-content').length > 0 ||
 								  $('[name="thread_id"]').length > 0;
+
+			// Store gift selection in cookie for reliable AJAX handling
+			var threadId = isThreadContext ? (bp_gifts_vars.thread_id || getThreadId()) : null;
+			var cookieData = {
+				gift_id: id,
+				gift_name: name,
+				gift_image: image,
+				thread_id: threadId,
+				context: isThreadContext ? 'thread' : 'message',
+				timestamp: Date.now()
+			};
+            console.log('Setting cookie data:', cookieData);
+			
+			// Set cookie with gift data (expires in 1 hour)
+			setCookie('bp_gifts_selected', JSON.stringify(cookieData), 60);
+			
+			// Also set a simple hidden input for backward compatibility
+			var hiddenInput = '<input type="hidden" name="bp_gift_id" value="' + id + '" />';
+			if ($('input[name="bp_gift_id"]').length) {
+				$('input[name="bp_gift_id"]').val(id);
+			} else {
+				$('.bp-gift-edit-container').append(hiddenInput);
+			}
 
 			// Create gift display with accessibility
 			var html = '<div class="bp-gift-holder" role="img" aria-label="' + 
 				sprintf(bp_gifts_vars.selected_gift_text, name) + '"' +
-				(isThreadContext ? ' data-attach-to="thread"' : ' data-attach-to="message"') + '>' +
+				(isThreadContext ? ' data-attach-to="thread"' : ' data-attach-to="message"') + 
+				' data-gift-id="' + id + '">' +
 				'<img src="' + image + '" alt="' + name + '" />' +
 				'<div class="bp-gift-name">' + name + '</div>';
 
@@ -150,17 +174,7 @@ jQuery(document).ready(function($) {
 						'aria-label="' + bp_gifts_vars.remove_text + '" ' +
 						'title="' + bp_gifts_vars.remove_text + '">&times;</button>' +
 				'</div>' +
-				'<input type="hidden" name="bp_gift_id" value="' + id + '" />';
-
-			// Add thread ID if in thread context
-			if (isThreadContext) {
-				var threadId = getThreadId();
-				if (threadId) {
-					html += '<input type="hidden" name="bp_gift_thread_id" value="' + threadId + '" />';
-				}
-			}
-
-			html += '</div>';
+				'</div>';
 
 			$('.bp-gift-edit-container').html(html);
 			$('#bp-send-gift-btn').attr('aria-expanded', 'false');
@@ -179,6 +193,12 @@ jQuery(document).ready(function($) {
 		event.preventDefault();
 		var $giftHolder = $(this).closest('.bp-gift-holder');
 		var giftName = $giftHolder.find('.bp-gift-name').text();
+		
+		// Clear gift selection cookie
+		deleteCookie('bp_gifts_selected');
+		
+		// Remove hidden input if it exists
+		$('input[name="bp_gift_id"]').remove();
 		
 		$giftHolder.slideUp(300, function() {
 			$(this).remove();
@@ -268,7 +288,12 @@ jQuery(document).ready(function($) {
 
 	// Get thread ID from various possible sources
 	function getThreadId() {
-		// Try different methods to get thread ID
+		// First, try the server-provided thread ID (most reliable)
+		if (bp_gifts_vars && bp_gifts_vars.thread_id && bp_gifts_vars.thread_id > 0) {
+			return bp_gifts_vars.thread_id;
+		}
+		
+		// Try different client-side methods as fallback
 		var threadId = $('[name="thread_id"]').val();
 		if (threadId) return threadId;
 		
@@ -319,5 +344,86 @@ jQuery(document).ready(function($) {
 
 	function hideLoading() {
 		$('.bp-gifts-list').removeClass('bp-gifts-loading');
+	}
+
+	// Cookie utility functions
+	function setCookie(name, value, minutes) {
+		var expires = "";
+		if (minutes) {
+			var date = new Date();
+			date.setTime(date.getTime() + (minutes * 60 * 1000));
+			expires = "; expires=" + date.toUTCString();
+		}
+		document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Lax";
+	}
+
+	function getCookie(name) {
+		var nameEQ = name + "=";
+		var ca = document.cookie.split(';');
+		for (var i = 0; i < ca.length; i++) {
+			var c = ca[i];
+			while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+			if (c.indexOf(nameEQ) === 0) {
+				return decodeURIComponent(c.substring(nameEQ.length, c.length));
+			}
+		}
+		return null;
+	}
+
+	function deleteCookie(name) {
+		document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+	}
+
+	// Hook into BuddyPress message send/reply completion
+	$(document).ajaxComplete(function(event, xhr, settings) {
+		// Check if this was a message send or reply AJAX request
+		if (settings.data && (
+			settings.data.indexOf('action=messages_send_message') > -1 ||
+			settings.data.indexOf('action=messages_send_reply') > -1
+		)) {
+			// Check if the request was successful
+			if (xhr.status === 200) {
+				try {
+					var response = JSON.parse(xhr.responseText);
+					if (response.success || (response.type && response.type !== 'error')) {
+						// Message was sent successfully, trigger gift processing
+						var giftData = getCookie('bp_gifts_selected');
+						if (giftData) {
+							// Send gift data to server for processing
+							processGiftAfterMessage(JSON.parse(giftData));
+							// Clear the cookie
+							deleteCookie('bp_gifts_selected');
+						}
+					}
+				} catch (e) {
+					// If response isn't JSON, assume success and process gift anyway
+					var giftData = getCookie('bp_gifts_selected');
+					if (giftData) {
+						processGiftAfterMessage(JSON.parse(giftData));
+						deleteCookie('bp_gifts_selected');
+					}
+				}
+			}
+		}
+	});
+
+	// Process gift data after message is sent
+	function processGiftAfterMessage(giftData) {
+		// Send AJAX request to process the gift relationship
+		$.ajax({
+			url: bp_gifts_vars.ajax_url || (window.ajaxurl || '/wp-admin/admin-ajax.php'),
+			type: 'POST',
+			data: {
+				action: 'bp_gifts_process_post_message',
+				gift_data: giftData,
+				nonce: bp_gifts_vars.nonce
+			},
+			success: function(response) {
+				console.log('BP Gifts: Gift relationship processed successfully');
+			},
+			error: function() {
+				console.log('BP Gifts: Error processing gift relationship');
+			}
+		});
 	}
 });

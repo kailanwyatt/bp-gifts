@@ -21,12 +21,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 class BP_Gifts_Messages {
 
 	/**
-	 * Process gift attachment from form submission.
+	 * Process gift from submission.
 	 *
 	 * @since 2.2.0
 	 * @param object $message Message object.
 	 */
 	public function process_gift_from_submission( $message ) {
+		// Log for debugging - check if this runs for replies
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( 'BP Gifts: Processing message ID ' . $message->id . ' (Thread: ' . $message->thread_id . ')' );
+		}
+		
 		// Check if a gift was attached (support both field names for compatibility)
 		$gift_id = 0;
 		if ( isset( $_POST['bp_gift_id'] ) && ! empty( $_POST['bp_gift_id'] ) ) {
@@ -35,11 +40,22 @@ class BP_Gifts_Messages {
 			$gift_id = absint( $_POST['bp_gifts_selected_gift'] );
 		}
 		
-		if ( ! $gift_id ) {
-			return;
+		// Check for gift data in BuddyPress cookies (passed via bp_get_cookies())
+		if ( ! $gift_id && isset( $_POST['cookie'] ) ) {
+			$gift_id = $this->extract_gift_from_bp_cookies( $_POST['cookie'], $message->thread_id );
+			if ( $gift_id ) {
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( 'BP Gifts: Found gift ID ' . $gift_id . ' from BP cookies for message ' . $message->id );
+				}
+			}
 		}
-		
-		// Verify the gift exists
+
+		if ( ! $gift_id ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( 'BP Gifts: No gift ID found in POST data, transient, or cookies for message ' . $message->id );
+			}
+			return;
+		}		// Verify the gift exists
 		$gift_post = get_post( $gift_id );
 		if ( ! $gift_post || $gift_post->post_type !== 'bp_gifts' ) {
 			return;
@@ -64,7 +80,15 @@ class BP_Gifts_Messages {
 		$this->attach_gift_to_message( $message->id, $gift_id );
 
 		// Create gift relationship record
-		$this->create_gift_relationship( $message, $gift_id );
+		$relationship_result = $this->create_gift_relationship( $message, $gift_id );
+		
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			if ( $relationship_result ) {
+				error_log( 'BP Gifts: Successfully created gift relationship(s) for message ' . $message->id . ' with gift ' . $gift_id );
+			} else {
+				error_log( 'BP Gifts: Failed to create gift relationship for message ' . $message->id . ' with gift ' . $gift_id );
+			}
+		}
 
 		// Deduct points if myCred is enabled
 		if ( BP_Gifts_Settings::is_mycred_enabled() ) {
@@ -335,5 +359,57 @@ class BP_Gifts_Messages {
 		}
 
 		return $relationships;
+	}
+
+	/**
+	 * Extract gift data from BuddyPress cookies string.
+	 *
+	 * @since 2.2.0
+	 * @param string $cookies_string URL-encoded cookie string from bp_get_cookies().
+	 * @param int    $thread_id Thread ID to validate against.
+	 * @return int|false Gift ID if found and valid, false otherwise.
+	 */
+	private function extract_gift_from_bp_cookies( $cookies_string, $thread_id = 0 ) {
+		if ( empty( $cookies_string ) ) {
+			return false;
+		}
+
+		// Decode the cookies string
+		$cookies_string = urldecode( $cookies_string );
+		
+		// Parse the query string to get individual cookies
+		parse_str( $cookies_string, $cookies );
+		
+		// Look for our gift cookie
+		if ( ! isset( $cookies['bp_gifts_selected'] ) ) {
+			return false;
+		}
+
+		// Try to decode the JSON gift data
+		$gift_data = json_decode( $cookies['bp_gifts_selected'], true );
+		
+		if ( ! $gift_data || ! is_array( $gift_data ) ) {
+			return false;
+		}
+
+		// Validate gift data structure
+		if ( ! isset( $gift_data['gift_id'] ) || ! $gift_data['gift_id'] ) {
+			return false;
+		}
+
+		// Validate thread ID if provided
+		if ( $thread_id && isset( $gift_data['thread_id'] ) && $gift_data['thread_id'] != $thread_id ) {
+			return false;
+		}
+
+		// Check if the gift data is not too old (1 hour max)
+		if ( isset( $gift_data['timestamp'] ) ) {
+			$age_seconds = time() - ( $gift_data['timestamp'] / 1000 ); // Convert from milliseconds
+			if ( $age_seconds > 3600 ) { // 1 hour
+				return false;
+			}
+		}
+
+		return absint( $gift_data['gift_id'] );
 	}
 }
