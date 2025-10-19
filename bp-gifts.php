@@ -17,7 +17,7 @@
  *
  * @package BP_Gifts
  * @author  SuitePlugins
- * @since   1.0.0
+ * @since   2.1.0
  * @license GPL-2.0-or-later
  */
 
@@ -26,52 +26,166 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Define plugin version for cache busting and compatibility checks.
+// Define plugin constants.
 if ( ! defined( 'BP_GIFTS_VERSION' ) ) {
 	define( 'BP_GIFTS_VERSION', '2.1.0' );
 }
 
-/**
- * Check if we should use the new service-based architecture.
- * This allows for a gradual migration and testing.
- */
-$use_new_architecture = apply_filters( 'bp_gifts_use_new_architecture', true );
-
-if ( $use_new_architecture && file_exists( plugin_dir_path( __FILE__ ) . 'bp-gifts-loader-v2.php' ) ) {
-	// Load the new service-based architecture
-	require_once plugin_dir_path( __FILE__ ) . 'bp-gifts-loader-v2.php';
-	
-	/**
-	 * Main instance of BP Gifts (New Architecture).
-	 *
-	 * Returns the main instance of BP_Gifts_Loader_V2.
-	 *
-	 * @since 2.1.0
-	 * @return BP_Gifts_Loader_V2
-	 */
-	function bp_gifts() {
-		return BP_Gifts_Loader_V2::instance();
-	}
-	
-	// Global for backwards compatibility.
-	$GLOBALS['bp_gifts'] = bp_gifts();
-	
-} else {
-	// Fallback to original architecture
-	require_once plugin_dir_path( __FILE__ ) . 'bp-gifts-loader.php';
-	
-	/**
-	 * Main instance of BP Gifts (Legacy).
-	 *
-	 * Returns the main instance of BP_Gifts_Loader to prevent the need to use globals.
-	 *
-	 * @since 1.0.0
-	 * @return BP_Gifts_Loader
-	 */
-	function bp_gifts() {
-		return BP_Gifts_Loader::instance();
-	}
-	
-	// Global for backwards compatibility.
-	$GLOBALS['bp_gifts'] = bp_gifts();
+if ( ! defined( 'BP_GIFTS_PLUGIN_DIR' ) ) {
+	define( 'BP_GIFTS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 }
+
+if ( ! defined( 'BP_GIFTS_PLUGIN_URL' ) ) {
+	define( 'BP_GIFTS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+}
+
+require_once BP_GIFTS_PLUGIN_DIR . 'includes/BP_Gifts_Database.php';
+
+/**
+ * Register BP Gifts as a BuddyPress component.
+ *
+ * This needs to happen early, before BuddyPress processes components.
+ *
+ * @since 2.1.0
+ * @param array $components Array of optional BuddyPress components.
+ * @return array Modified array including BP Gifts component.
+ */
+function bp_gifts_register_component( $components ) {
+	// Just add the component ID, not the array with title/description
+	$components[] = 'gifts';
+	
+	return $components;
+}
+
+/**
+ * Add component title and description for BuddyPress Components admin page.
+ *
+ * @since 2.1.0
+ * @param array $component_info Array of component information.
+ * @return array Modified array with gifts component info.
+ */
+function bp_gifts_component_info( $component_info ) {
+	$component_info['gifts'] = array(
+		'title'       => __( 'User Gifts', 'bp-gifts' ),
+		'description' => __( 'Allow members to send virtual gifts to each other through private messages, creating a more engaging and social community experience.', 'bp-gifts' ),
+	);
+	
+	return $component_info;
+}
+
+/**
+ * Register BP Gifts admin settings early.
+ *
+ * @since 2.2.0
+ */
+function bp_gifts_register_admin_settings() {
+	$settings_file = dirname( __FILE__ ) . '/includes/BP_Gifts_Settings.php';
+	
+	if ( file_exists( $settings_file ) ) {
+		require_once $settings_file;
+		
+		if ( class_exists( 'BP_Gifts_Settings' ) ) {
+			BP_Gifts_Settings::init();
+		}
+	}
+}
+
+// Register admin settings hook early
+add_action( 'bp_register_admin_settings', 'bp_gifts_register_admin_settings' );
+
+
+
+/**
+ * Initialize BP Gifts plugin.
+ * 
+ * Waits for BuddyPress to be loaded before initializing.
+ *
+ * @since 2.1.0
+ */
+function bp_gifts_init() {
+	// Check if BuddyPress is active
+	if ( ! function_exists( 'buddypress' ) ) {
+		add_action( 'admin_notices', 'bp_gifts_buddypress_required_notice' );
+		return;
+	}
+
+	// Load the plugin classes
+	require_once BP_GIFTS_PLUGIN_DIR . 'includes/BP_Gifts_Settings.php';
+	require_once BP_GIFTS_PLUGIN_DIR . 'includes/BP_Gifts_Taxonomy.php';
+	require_once BP_GIFTS_PLUGIN_DIR . 'includes/BP_Gifts_Profile_Tab.php';
+	require_once BP_GIFTS_PLUGIN_DIR . 'includes/BP_Gifts_Core.php';
+	require_once BP_GIFTS_PLUGIN_DIR . 'includes/BP_Gifts_Gifts.php';
+	require_once BP_GIFTS_PLUGIN_DIR . 'includes/BP_Gifts_Messages.php';
+	require_once BP_GIFTS_PLUGIN_DIR . 'includes/BP_Gifts_Modal.php';
+	require_once BP_GIFTS_PLUGIN_DIR . 'includes/BP_Gifts_MyCred.php';
+	require_once BP_GIFTS_PLUGIN_DIR . 'includes/BP_Gifts_Admin.php';
+	
+	// Initialize the plugin
+	BP_Gifts_Core::instance();
+	
+	// Ensure database table exists
+	bp_gifts_check_database();
+}
+
+/**
+ * Display notice if BuddyPress is not active.
+ *
+ * @since 2.1.0
+ */
+function bp_gifts_buddypress_required_notice() {
+	?>
+	<div class="notice notice-error">
+		<p><?php esc_html_e( 'BP Gifts requires BuddyPress to be installed and activated.', 'bp-gifts' ); ?></p>
+	</div>
+	<?php
+}
+
+/**
+ * Plugin activation hook.
+ *
+ * @since 2.1.0
+ */
+function bp_gifts_activate() {
+	// Create database tables
+	require_once BP_GIFTS_PLUGIN_DIR . 'includes/BP_Gifts_Database.php';
+	BP_Gifts_Database::create_table();
+	
+	// Set activation flag for any needed initialization
+	update_option( 'bp_gifts_activated', true );
+}
+
+/**
+ * Check and create database tables if needed.
+ *
+ * @since 2.1.0
+ */
+function bp_gifts_check_database() {
+	// Only run on admin pages or when specifically needed
+	if ( ! is_admin() && ! wp_doing_cron() ) {
+		return;
+	}
+
+	// Check if table exists
+	if ( ! BP_Gifts_Database::table_exists() ) {
+		BP_Gifts_Database::create_table();
+	}
+}
+
+// Register BP Gifts as a BuddyPress component immediately
+add_filter( 'bp_optional_components', 'bp_gifts_register_component' );
+
+// Register component info for admin display
+add_filter( 'bp_admin_optional_components', 'bp_gifts_component_info' );
+
+add_filter( 'bp_core_admin_get_components', 'bp_gifts_component_info', 12, 1 );
+
+
+
+// Initialize after BuddyPress is loaded
+add_action( 'bp_loaded', 'bp_gifts_init' );
+
+// Plugin activation
+register_activation_hook( __FILE__, 'bp_gifts_activate' );
+
+// Check database on admin init
+add_action( 'admin_init', 'bp_gifts_check_database' );
