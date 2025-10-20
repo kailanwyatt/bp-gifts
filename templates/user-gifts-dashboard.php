@@ -48,7 +48,10 @@ $is_own_profile = ( $user_id === bp_loggedin_user_id() );
 			<?php if ( $is_own_profile ) : ?>
 				<?php esc_html_e( 'My Gifts', 'bp-gifts' ); ?>
 			<?php else : ?>
-				<?php printf( esc_html__( "%s's Gifts", 'bp-gifts' ), bp_get_displayed_user_fullname() ); ?>
+				<?php 
+				// translators: %s is the user's display name
+				printf( esc_html__( "%s's Gifts", 'bp-gifts' ), esc_html( bp_get_displayed_user_fullname() ) ); 
+				?>
 			<?php endif; ?>
 		</h2>
 		
@@ -157,7 +160,7 @@ $is_own_profile = ( $user_id === bp_loggedin_user_id() );
 									
 									<p class="bp-gift-date">
 										<span class="bp-gift-meta-label"><?php esc_html_e( 'Date:', 'bp-gifts' ); ?></span>
-										<time datetime="<?php echo esc_attr( date( 'c', strtotime( $gift['date_received'] ?? $gift['date_sent'] ) ) ); ?>">
+										<time datetime="<?php echo esc_attr( wp_date( 'c', strtotime( $gift['date_received'] ?? $gift['date_sent'] ) ) ); ?>">
 											<?php echo esc_html( bp_format_time( strtotime( $gift['date_received'] ?? $gift['date_sent'] ) ) ); ?>
 										</time>
 									</p>
@@ -217,7 +220,10 @@ $is_own_profile = ( $user_id === bp_loggedin_user_id() );
 									<?php echo esc_html( $stats['favorite_gift']['gift_data']['name'] ); ?>
 								</p>
 								<p class="bp-gifts-favorite-count">
-									<?php printf( esc_html__( 'Received %d times', 'bp-gifts' ), $stats['favorite_gift']['count'] ); ?>
+									<?php 
+									// translators: %d is the number of times received
+									printf( esc_html__( 'Received %d times', 'bp-gifts' ), esc_html( $stats['favorite_gift']['count'] ) ); 
+									?>
 								</p>
 							</div>
 						</div>
@@ -232,7 +238,10 @@ $is_own_profile = ( $user_id === bp_loggedin_user_id() );
 								<?php echo esc_html( $stats['most_active_sender']['sender_name'] ); ?>
 							</p>
 							<p class="bp-gifts-sender-count">
-								<?php printf( esc_html__( '%d gifts sent', 'bp-gifts' ), $stats['most_active_sender']['count'] ); ?>
+								<?php 
+								// translators: %d is the number of gifts sent
+								printf( esc_html__( '%d gifts sent', 'bp-gifts' ), esc_html( $stats['most_active_sender']['count'] ) ); 
+								?>
 							</p>
 						</div>
 					</div>

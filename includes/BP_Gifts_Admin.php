@@ -150,7 +150,7 @@ class BP_Gifts_Admin {
 			case 'thumbnail':
 				$thumbnail = get_the_post_thumbnail( $post_id, array( 50, 50 ) );
 				if ( $thumbnail ) {
-					echo $thumbnail;
+					echo wp_kses_post( $thumbnail );
 				} else {
 					echo '<span class="dashicons dashicons-heart" style="font-size: 30px; color: #ccc;"></span>';
 				}
@@ -221,7 +221,7 @@ class BP_Gifts_Admin {
 	 * @param int $post_id Post ID.
 	 */
 	public function save_meta_boxes( $post_id ) {
-		if ( ! isset( $_POST['bp_gifts_meta_nonce'] ) || ! wp_verify_nonce( $_POST['bp_gifts_meta_nonce'], 'bp_gifts_meta_nonce' ) ) {
+		if ( ! isset( $_POST['bp_gifts_meta_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['bp_gifts_meta_nonce'] ), 'bp_gifts_meta_nonce' ) ) {
 			return;
 		}
 
@@ -242,7 +242,7 @@ class BP_Gifts_Admin {
             remove_action( 'save_post', array( $this, 'save_meta_boxes' ) );
 			wp_update_post( array(
 				'ID'           => $post_id,
-				'post_content' => sanitize_textarea_field( $_POST['gift_description'] ),
+				'post_content' => sanitize_textarea_field( wp_unslash( $_POST['gift_description'] ) ),
 			) );
             add_action( 'save_post', array( $this, 'save_meta_boxes' ) );
 		}

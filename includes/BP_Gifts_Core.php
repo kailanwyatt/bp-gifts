@@ -65,20 +65,10 @@ class BP_Gifts_Core {
 	 */
 	private function init_hooks() {
 		// Core hooks
-		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'bp_register_admin_settings', array( $this, 'init_admin_settings' ) );
 		
 		// Initialize component features after BuddyPress loads
 		add_action( 'bp_init', array( $this, 'init_component_features' ) );
-	}
-
-	/**
-	 * Load plugin text domain.
-	 *
-	 * @since 2.2.0
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain( 'bp-gifts', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
 
 	/**
@@ -366,11 +356,13 @@ class BP_Gifts_Core {
 				echo '<h5>' . esc_html( $gift->title ) . '</h5>';
 				
 				if ( $is_sender ) {
+					// translators: %s is the recipient's name
 					printf(
 						'<p>' . esc_html__( 'Sent to %s', 'bp-gifts' ) . '</p>',
 						'<strong>' . esc_html( $other_user->display_name ) . '</strong>'
 					);
 				} else {
+					// translators: %s is the sender's name
 					printf(
 						'<p>' . esc_html__( 'Received from %s', 'bp-gifts' ) . '</p>',
 						'<strong>' . esc_html( $other_user->display_name ) . '</strong>'
@@ -477,9 +469,10 @@ class BP_Gifts_Core {
 							<?php if ( $atts['show_count'] ) : ?>
 								<span class="gift-count">
 									<?php
+									// translators: %d is the number of times the gift was sent
 									printf(
-										_n( 'Sent %d time', 'Sent %d times', $popular_gift->count, 'bp-gifts' ),
-										$popular_gift->count
+										esc_html( _n( 'Sent %d time', 'Sent %d times', $popular_gift->count, 'bp-gifts' ) ),
+										esc_html( $popular_gift->count )
 									);
 									?>
 								</span>
@@ -619,14 +612,21 @@ class BP_Gifts_Core {
 				'nonce'    => wp_create_nonce( 'bp_gifts_nonce' ),
 				'thread_id' => $current_thread_id,
 				'mycred' => $mycred_data,
+				// translators: %d is the number of gifts
 				'showing_all_text' => __( 'Showing all %d gifts', 'bp-gifts' ),
+				// translators: %1$d is the filtered count, %2$d is the total count
 				'showing_filtered_text' => __( 'Showing %1$d of %2$d gifts', 'bp-gifts' ),
+				// translators: %d is the number of gifts found
 				'search_results_text' => __( '%d gifts found', 'bp-gifts' ),
+				// translators: %s is the gift name
 				'selected_gift_text' => __( 'Selected gift: %s', 'bp-gifts' ),
 				'attached_to_thread_text' => __( 'Attached to thread', 'bp-gifts' ),
 				'remove_text' => __( 'Remove gift', 'bp-gifts' ),
+				// translators: %s is the gift name
 				'gift_selected_for_thread_text' => __( 'Gift %s selected for thread', 'bp-gifts' ),
+				// translators: %s is the gift name
 				'gift_selected_text' => __( 'Gift %s selected', 'bp-gifts' ),
+				// translators: %s is the gift name
 				'gift_removed_text' => __( 'Gift %s removed', 'bp-gifts' ),
 				'no_gifts_found_text' => __( 'No gifts found', 'bp-gifts' ),
 				'loading_text' => __( 'Loading gifts...', 'bp-gifts' ),
@@ -645,7 +645,7 @@ class BP_Gifts_Core {
 	 */
 	public function render_gift_composer() {
 		$modal = new BP_Gifts_Modal();
-		echo $modal->render_gift_composer();
+		echo wp_kses_post( $modal->render_gift_composer() );
 	}
 
 	/**
@@ -668,7 +668,7 @@ class BP_Gifts_Core {
 	 */
 	public function process_gift_post_message() {
 		// Verify nonce
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'bp_gifts_nonce' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['nonce'] ), 'bp_gifts_nonce' ) ) {
 			wp_send_json_error( array( 'message' => 'Invalid nonce' ) );
 		}
 
@@ -677,7 +677,7 @@ class BP_Gifts_Core {
 			wp_send_json_error( array( 'message' => 'No gift data provided' ) );
 		}
 
-		$gift_data = $_POST['gift_data'];
+		$gift_data = map_deep( wp_unslash( $_POST['gift_data'] ), 'sanitize_text_field' );
 		
 		// Validate gift data structure
 		if ( ! isset( $gift_data['gift_id'] ) || ! $gift_data['gift_id'] ) {
@@ -752,7 +752,7 @@ class BP_Gifts_Core {
 		
 		if ( $gift ) {
 			$modal = new BP_Gifts_Modal();
-			echo $modal->render_message_gift( $gift );
+			echo wp_kses_post( $modal->render_message_gift( $gift ) );
 		}
 	}
 
@@ -782,7 +782,7 @@ class BP_Gifts_Core {
 		
 		if ( ! empty( $gifts ) ) {
 			$modal = new BP_Gifts_Modal();
-			echo $modal->render_thread_gifts( $gifts );
+			echo wp_kses_post( $modal->render_thread_gifts( $gifts ) );
 		}
 	}
 

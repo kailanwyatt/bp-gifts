@@ -38,7 +38,7 @@ class BP_Gifts_Messages {
 		
 		// Check for gift data in BuddyPress cookies (passed via bp_get_cookies())
 		if ( ! $gift_id && isset( $_POST['cookie'] ) ) {
-			$gift_id = $this->extract_gift_from_bp_cookies( $_POST['cookie'], $message->thread_id );
+			$gift_id = $this->extract_gift_from_bp_cookies( sanitize_text_field( wp_unslash( $_POST['cookie'] ) ), $message->thread_id );
 		}
 
 		if ( ! $gift_id ) {
@@ -50,7 +50,7 @@ class BP_Gifts_Messages {
 		}
 
 		// Check nonce
-		if ( ! isset( $_POST['bp_gifts_nonce'] ) || ! wp_verify_nonce( $_POST['bp_gifts_nonce'], 'bp_gifts_nonce' ) ) {
+		if ( ! isset( $_POST['bp_gifts_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['bp_gifts_nonce'] ), 'bp_gifts_nonce' ) ) {
 			return;
 		}
 
@@ -198,7 +198,7 @@ class BP_Gifts_Messages {
 		$additional_data = array(
 			'thread_id' => $message->thread_id,
 			'message_subject' => $message->subject ?? '',
-			'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+			'user_agent' => isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '',
 			'ip_address' => $this->get_user_ip(),
 		);
 
@@ -279,7 +279,7 @@ class BP_Gifts_Messages {
 
 		foreach ( $ip_headers as $header ) {
 			if ( ! empty( $_SERVER[ $header ] ) ) {
-				$ip = $_SERVER[ $header ];
+				$ip = sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) );
 				// Handle comma-separated IPs (X-Forwarded-For can contain multiple IPs)
 				if ( strpos( $ip, ',' ) !== false ) {
 					$ip = trim( explode( ',', $ip )[0] );
@@ -291,7 +291,7 @@ class BP_Gifts_Messages {
 			}
 		}
 
-		return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+		return isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '0.0.0.0';
 	}
 
 	/**

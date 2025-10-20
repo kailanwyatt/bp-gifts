@@ -141,7 +141,10 @@ class BP_Gifts_Modal {
 										 data-categories="<?php echo esc_attr( $categories_data ); ?>"
 										 tabindex="0"
 										 role="button"
-										 aria-label="<?php printf( esc_attr__( 'Select gift: %s', 'bp-gifts' ), $gift->title ); ?>">
+										 aria-label="<?php 
+										 	// translators: %s is the gift title
+										 	printf( esc_attr__( 'Select gift: %s', 'bp-gifts' ), esc_attr( $gift->title ) ); 
+										 ?>">
 										
 										<div class="bp-gift-thumbnail">
 											<?php if ( $gift->thumbnail ) : ?>
@@ -258,10 +261,11 @@ class BP_Gifts_Modal {
 							<strong><?php echo esc_html( $gift->title ); ?></strong>
 							<small>
 								<?php
+								// translators: %1$s is the sender's name, %2$s is the date sent
 								printf(
-									esc_html__( 'Sent by %s on %s', 'bp-gifts' ),
-									bp_core_get_user_displayname( $gift->sender_id ),
-									date_i18n( get_option( 'date_format' ), strtotime( $gift->date_sent ) )
+									esc_html__( 'Sent by %1$s on %2$s', 'bp-gifts' ),
+									esc_html( bp_core_get_user_displayname( $gift->sender_id ) ),
+									esc_html( date_i18n( get_option( 'date_format' ), strtotime( $gift->date_sent ) ) )
 								);
 								?>
 							</small>

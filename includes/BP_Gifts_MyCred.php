@@ -70,8 +70,9 @@ class BP_Gifts_MyCred {
 		$gift_title = get_the_title( $gift_id );
 		$receiver_name = bp_core_get_user_displayname( $receiver_id );
 
+		// translators: %1$s is the gift title, %2$s is the receiver's name
 		$entry = sprintf(
-			__( 'Sent gift "%s" to %s', 'bp-gifts' ),
+			__( 'Sent gift "%1$s" to %2$s', 'bp-gifts' ),
 			$gift_title,
 			$receiver_name
 		);
@@ -123,8 +124,9 @@ class BP_Gifts_MyCred {
 		$sender_name = bp_core_get_user_displayname( $sender_id );
 		$gift_title = get_the_title( $gift_id );
 
+		// translators: %1$s is the gift title, %2$s is the sender's name
 		$entry = sprintf(
-			__( 'Received gift "%s" from %s', 'bp-gifts' ),
+			__( 'Received gift "%1$s" from %2$s', 'bp-gifts' ),
 			$gift_title,
 			$sender_name
 		);
@@ -314,7 +316,7 @@ class BP_Gifts_MyCred {
 		}
 
 		// Verify nonce
-		if ( ! wp_verify_nonce( $_POST['bp_gifts_mycred_nonce'], 'bp_gifts_mycred_meta_nonce' ) ) {
+		if ( ! wp_verify_nonce( wp_unslash( $_POST['bp_gifts_mycred_nonce'] ), 'bp_gifts_mycred_meta_nonce' ) ) {
 			return;
 		}
 
@@ -350,7 +352,7 @@ class BP_Gifts_MyCred {
 	 */
 	public function ajax_check_balance() {
 		// Verify nonce
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'bp_gifts_nonce' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['nonce'] ), 'bp_gifts_nonce' ) ) {
 			wp_send_json_error( array( 'message' => 'Invalid nonce' ) );
 		}
 
@@ -381,7 +383,7 @@ class BP_Gifts_MyCred {
 	 */
 	public function ajax_get_costs() {
 		// Verify nonce
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'bp_gifts_nonce' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['nonce'] ), 'bp_gifts_nonce' ) ) {
 			wp_send_json_error( array( 'message' => 'Invalid nonce' ) );
 		}
 

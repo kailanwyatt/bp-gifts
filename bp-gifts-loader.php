@@ -387,11 +387,17 @@ if ( ! class_exists( 'BP_Gifts_Loader' ) ) :
 					'remove_text'           => __( 'Remove gift', 'bp-gifts' ),
 					'ajax_url'              => admin_url( 'admin-ajax.php' ),
 					'nonce'                 => wp_create_nonce( 'bp_gifts_nonce' ),
+					// translators: %s is the gift name
 					'selected_gift_text'    => __( 'Selected gift: %s', 'bp-gifts' ),
+					// translators: %s is the gift name  
 					'gift_selected_text'    => __( '%s has been selected as your gift.', 'bp-gifts' ),
+					// translators: %s is the gift name
 					'gift_removed_text'     => __( 'Gift %s has been removed.', 'bp-gifts' ),
+					// translators: %s is the number of gifts
 					'showing_all_text'      => __( 'Showing all %s gifts', 'bp-gifts' ),
-					'showing_filtered_text' => __( 'Showing %s of %s gifts', 'bp-gifts' ),
+					// translators: %1$s is the filtered count, %2$s is the total count
+					'showing_filtered_text' => __( 'Showing %1$s of %2$s gifts', 'bp-gifts' ),
+					// translators: %s is the number of gifts found
 					'search_results_text'   => __( '%s gifts found', 'bp-gifts' ),
 					'no_gifts_text'         => __( 'No gifts available.', 'bp-gifts' ),
 					'search_placeholder'    => __( 'Search gifts...', 'bp-gifts' ),

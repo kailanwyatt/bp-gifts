@@ -144,7 +144,7 @@ class BP_Gifts_Profile_Tab {
 			$user_service = $loader->get_service( 'user_service' );
 
 			// Get filter parameters
-			$gift_type = isset( $_GET['gift_type'] ) ? sanitize_text_field( $_GET['gift_type'] ) : 'all';
+			$gift_type = isset( $_GET['gift_type'] ) ? sanitize_text_field( wp_unslash( $_GET['gift_type'] ) ) : 'all';
 			$page = isset( $_GET['gifts_page'] ) ? absint( $_GET['gifts_page'] ) : 1;
 
 			// Get received gifts
@@ -183,7 +183,7 @@ class BP_Gifts_Profile_Tab {
 			$user_service = $loader->get_service( 'user_service' );
 
 			// Get filter parameters
-			$gift_type = isset( $_GET['gift_type'] ) ? sanitize_text_field( $_GET['gift_type'] ) : 'all';
+			$gift_type = isset( $_GET['gift_type'] ) ? sanitize_text_field( wp_unslash( $_GET['gift_type'] ) ) : 'all';
 			$page = isset( $_GET['gifts_page'] ) ? absint( $_GET['gifts_page'] ) : 1;
 
 			// Get sent gifts
@@ -303,7 +303,7 @@ class BP_Gifts_Profile_Tab {
 											
 											<p class="bp-gift-date">
 												<span class="bp-gift-meta-label"><?php esc_html_e( 'Date:', 'bp-gifts' ); ?></span>
-												<time datetime="<?php echo esc_attr( date( 'c', strtotime( $gift['date_received'] ?? $gift['date_sent'] ) ) ); ?>">
+												<time datetime="<?php echo esc_attr( wp_date( 'c', strtotime( $gift['date_received'] ?? $gift['date_sent'] ) ) ); ?>">
 													<?php echo esc_html( bp_format_time( strtotime( $gift['date_received'] ?? $gift['date_sent'] ) ) ); ?>
 												</time>
 											</p>
