@@ -588,10 +588,6 @@ class BP_Gifts_Core {
 			$thread_id = (int) bp_action_variable( 0 );
 			if ( $thread_id && messages_is_valid_thread( $thread_id ) && messages_check_thread_access( $thread_id ) ) {
 				$current_thread_id = $thread_id;
-				
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					error_log( 'BP Gifts: Detected thread ID ' . $current_thread_id . ' for JavaScript localization' );
-				}
 			}
 		}
 
@@ -640,15 +636,6 @@ class BP_Gifts_Core {
 				'free_text' => __( 'Free', 'bp-gifts' ),
 			)
 		);
-		
-		// Add debug info in development
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			wp_add_inline_script(
-				'bp-gifts-main',
-				'console.log("BP Gifts assets loaded successfully");',
-				'after'
-			);
-		}
 	}
 
 	/**
@@ -699,10 +686,6 @@ class BP_Gifts_Core {
 
 		$gift_id = absint( $gift_data['gift_id'] );
 		$thread_id = isset( $gift_data['thread_id'] ) ? absint( $gift_data['thread_id'] ) : 0;
-		
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( 'BP Gifts: Processing post-message gift - Gift ID: ' . $gift_id . ', Thread ID: ' . $thread_id );
-		}
 
 		// Get the most recent message in the thread
 		global $wpdb;
@@ -746,11 +729,6 @@ class BP_Gifts_Core {
 				$mycred = new BP_Gifts_MyCred();
 				// For group messages, we'll charge per gift sent, not per recipient
 				$success = $mycred->charge_user_for_gift( $message_obj->sender_id, 0, $gift_id );
-				if ( ! $success ) {
-					if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-						error_log( 'BP Gifts: Failed to charge user ' . $message_obj->sender_id . ' for gift ' . $gift_id );
-					}
-				}
 			}
 			
 			wp_send_json_success( array( 

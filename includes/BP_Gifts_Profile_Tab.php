@@ -162,7 +162,6 @@ class BP_Gifts_Profile_Tab {
 
 		} catch ( Exception $e ) {
 			echo '<p>' . esc_html__( 'Error loading gifts. Please try again later.', 'bp-gifts' ) . '</p>';
-			error_log( 'BP Gifts Profile Tab Error: ' . $e->getMessage() );
 		}
 	}
 
@@ -202,7 +201,6 @@ class BP_Gifts_Profile_Tab {
 
 		} catch ( Exception $e ) {
 			echo '<p>' . esc_html__( 'Error loading gifts. Please try again later.', 'bp-gifts' ) . '</p>';
-			error_log( 'BP Gifts Profile Tab Error: ' . $e->getMessage() );
 		}
 	}
 

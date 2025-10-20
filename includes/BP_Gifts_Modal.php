@@ -39,7 +39,7 @@ class BP_Gifts_Modal {
 		}
 
 		ob_start();
-        error_log( '---' . print_r( bp_action_variable(0), true ) );
+
 		?>
 		<div id="bp-gifts-composer" class="bp-gifts-composer">
 			<button type="button" id="bp-send-gift-btn" class="bp-gifts-open-modal button" aria-expanded="false">

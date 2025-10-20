@@ -232,7 +232,7 @@ jQuery(document).ready(function($) {
 				timestamp: Date.now(),
 				cost: cost
 			};
-            console.log('Setting cookie data:', cookieData);
+
 			
 			// Set cookie with gift data (expires in 1 hour)
 			setCookie('bp_gifts_selected', JSON.stringify(cookieData), 60);
@@ -509,10 +509,10 @@ jQuery(document).ready(function($) {
 				nonce: bp_gifts_vars.nonce
 			},
 			success: function(response) {
-				console.log('BP Gifts: Gift relationship processed successfully');
+
 			},
 			error: function() {
-				console.log('BP Gifts: Error processing gift relationship');
+
 			}
 		});
 	}

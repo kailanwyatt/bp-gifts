@@ -27,10 +27,6 @@ class BP_Gifts_Messages {
 	 * @param object $message Message object.
 	 */
 	public function process_gift_from_submission( $message ) {
-		// Log for debugging - check if this runs for replies
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( 'BP Gifts: Processing message ID ' . $message->id . ' (Thread: ' . $message->thread_id . ')' );
-		}
 		
 		// Check if a gift was attached (support both field names for compatibility)
 		$gift_id = 0;
@@ -43,17 +39,9 @@ class BP_Gifts_Messages {
 		// Check for gift data in BuddyPress cookies (passed via bp_get_cookies())
 		if ( ! $gift_id && isset( $_POST['cookie'] ) ) {
 			$gift_id = $this->extract_gift_from_bp_cookies( $_POST['cookie'], $message->thread_id );
-			if ( $gift_id ) {
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					error_log( 'BP Gifts: Found gift ID ' . $gift_id . ' from BP cookies for message ' . $message->id );
-				}
-			}
 		}
 
 		if ( ! $gift_id ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( 'BP Gifts: No gift ID found in POST data, transient, or cookies for message ' . $message->id );
-			}
 			return;
 		}		// Verify the gift exists
 		$gift_post = get_post( $gift_id );
@@ -81,14 +69,6 @@ class BP_Gifts_Messages {
 
 		// Create gift relationship record
 		$relationship_result = $this->create_gift_relationship( $message, $gift_id );
-		
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			if ( $relationship_result ) {
-				error_log( 'BP Gifts: Successfully created gift relationship(s) for message ' . $message->id . ' with gift ' . $gift_id );
-			} else {
-				error_log( 'BP Gifts: Failed to create gift relationship for message ' . $message->id . ' with gift ' . $gift_id );
-			}
-		}
 
 		// Deduct points if myCred is enabled
 		if ( BP_Gifts_Settings::is_mycred_enabled() && $relationship_result ) {
@@ -97,12 +77,6 @@ class BP_Gifts_Messages {
 			$recipients = $this->get_message_recipients( $message->thread_id );
 			$receiver_id = ! empty( $recipients ) ? $recipients[0]->user_id : 0;
 			$success = $mycred->charge_user_for_gift( bp_loggedin_user_id(), $receiver_id, $gift_id );
-			if ( ! $success ) {
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					error_log( 'BP Gifts: Failed to charge user for gift ' . $gift_id );
-				}
-				// Don't fail the entire process, but log the error
-			}
 		}
 	}
 
