@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Gifts for BuddyPress 2.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bp-gifts\n"
-"POT-Creation-Date: 2025-10-13 22:15:05+00:00\n"
+"POT-Creation-Date: 2025-10-20 00:38:34+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,634 +24,581 @@ msgstr ""
 "X-Textdomain-Support: yes\n"
 "X-Generator: grunt-wp-i18n 1.0.4\n"
 
-#: admin/class-bp-gifts-admin.php:111 build/admin/class-bp-gifts-admin.php:111
-#. translators: %s: revision date.
-msgid "Gift restored to revision from %s"
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:116 admin/class-bp-gifts-admin.php:119
-#: build/admin/class-bp-gifts-admin.php:116
-#: build/admin/class-bp-gifts-admin.php:119
-msgid "Gift updated."
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:117 build/admin/class-bp-gifts-admin.php:117
-msgid "Custom field updated."
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:118 build/admin/class-bp-gifts-admin.php:118
-msgid "Custom field deleted."
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:121 build/admin/class-bp-gifts-admin.php:121
-msgid "Gift published."
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:122 build/admin/class-bp-gifts-admin.php:122
-msgid "Gift saved."
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:123 build/admin/class-bp-gifts-admin.php:123
-msgid "Gift submitted."
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:126 build/admin/class-bp-gifts-admin.php:126
-#. translators: %1$s: date and time of the scheduled gift.
-msgid "Gift scheduled for: <strong>%1$s</strong>."
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:127 build/admin/class-bp-gifts-admin.php:127
-msgid "M j, Y @ G:i"
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:129 build/admin/class-bp-gifts-admin.php:129
-msgid "Gift draft updated."
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:143 build/admin/class-bp-gifts-admin.php:143
-msgid "Gift Instructions"
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:160 build/admin/class-bp-gifts-admin.php:160
-msgid "To create a gift:"
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:162 build/admin/class-bp-gifts-admin.php:162
-msgid "Add a title for your gift"
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:163 build/admin/class-bp-gifts-admin.php:163
-msgid "Set a featured image (required)"
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:164 build/admin/class-bp-gifts-admin.php:164
-msgid "Publish the gift"
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:166 build/admin/class-bp-gifts-admin.php:166
-msgid "Note:"
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:166 build/admin/class-bp-gifts-admin.php:166
-msgid "Gifts without featured images will not appear in the gift selector."
-msgstr ""
-
-#: admin/class-bp-gifts-admin.php:187 build/admin/class-bp-gifts-admin.php:187
-msgid "BP Gifts requires BuddyPress to be active for full functionality."
-msgstr ""
-
-#: bp-gifts-loader-v2.php:154 bp-gifts-loader.php:151
-#: build/bp-gifts-loader-v2.php:154 build/bp-gifts-loader.php:151
+#: bp-gifts-loader.php:151
 msgid ""
 "BP Gifts requires BuddyPress, WordPress 5.0+, and PHP 7.4+. Please ensure "
 "these requirements are met."
 msgstr ""
 
-#: bp-gifts-loader-v2.php:326 bp-gifts-loader.php:223
-#: build/bp-gifts-loader-v2.php:326 build/bp-gifts-loader.php:223
+#: bp-gifts-loader.php:221 includes/BP_Gifts_Core.php:181
 msgid "Add New Gift"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:327 bp-gifts-loader.php:224
-#: build/bp-gifts-loader-v2.php:327 build/bp-gifts-loader.php:224
+#: bp-gifts-loader.php:222 includes/BP_Gifts_Core.php:182
 msgid "New Gift"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:328 bp-gifts-loader.php:225
-#: build/bp-gifts-loader-v2.php:328 build/bp-gifts-loader.php:225
+#: bp-gifts-loader.php:223 includes/BP_Gifts_Core.php:183
 msgid "Edit Gift"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:329 bp-gifts-loader.php:226
-#: build/bp-gifts-loader-v2.php:329 build/bp-gifts-loader.php:226
+#: bp-gifts-loader.php:224 includes/BP_Gifts_Core.php:184
 msgid "View Gift"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:330 bp-gifts-loader.php:227
-#: build/bp-gifts-loader-v2.php:330 build/bp-gifts-loader.php:227
-#: build/includes/BP_Gifts_Profile_Tab.php:248
-#: build/templates/user-gifts-dashboard.php:100
+#: bp-gifts-loader.php:225 includes/BP_Gifts_Core.php:185
 #: includes/BP_Gifts_Profile_Tab.php:248 templates/user-gifts-dashboard.php:100
 msgid "All Gifts"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:331 bp-gifts-loader.php:228
-#: build/bp-gifts-loader-v2.php:331 build/bp-gifts-loader.php:228
+#: bp-gifts-loader.php:226 includes/BP_Gifts_Core.php:186
 msgid "Search Gifts"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:332 bp-gifts-loader.php:229
-#: build/bp-gifts-loader-v2.php:332 build/bp-gifts-loader.php:229
+#: bp-gifts-loader.php:227 includes/BP_Gifts_Core.php:187
 msgid "Parent Gifts:"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:333 bp-gifts-loader.php:230
-#: build/bp-gifts-loader-v2.php:333 build/bp-gifts-loader.php:230
+#: bp-gifts-loader.php:228 includes/BP_Gifts_Core.php:188
 msgid "No gifts found."
 msgstr ""
 
-#: bp-gifts-loader-v2.php:334 bp-gifts-loader.php:231
-#: build/bp-gifts-loader-v2.php:334 build/bp-gifts-loader.php:231
+#: bp-gifts-loader.php:229 includes/BP_Gifts_Core.php:189
 msgid "No gifts found in Trash."
 msgstr ""
 
-#: bp-gifts-loader-v2.php:464 bp-gifts-loader.php:389
-#: build/bp-gifts-loader-v2.php:464 build/bp-gifts-loader.php:389
-#: build/includes/services/BP_Gifts_Modal_Service.php:242
-#: includes/services/BP_Gifts_Modal_Service.php:242
+#: bp-gifts-loader.php:387 includes/BP_Gifts_Core.php:631
 msgid "Remove gift"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:467 bp-gifts-loader.php:392
-#: build/bp-gifts-loader-v2.php:467 build/bp-gifts-loader.php:392
+#: bp-gifts-loader.php:390 includes/BP_Gifts_Core.php:629
 msgid "Selected gift: %s"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:468 bp-gifts-loader.php:393
-#: build/bp-gifts-loader-v2.php:468 build/bp-gifts-loader.php:393
+#: bp-gifts-loader.php:391
 msgid "%s has been selected as your gift."
 msgstr ""
 
-#: bp-gifts-loader-v2.php:469 build/bp-gifts-loader-v2.php:469
-msgid "%s has been selected as your thread gift."
-msgstr ""
-
-#: bp-gifts-loader-v2.php:470 bp-gifts-loader.php:394
-#: build/bp-gifts-loader-v2.php:470 build/bp-gifts-loader.php:394
+#: bp-gifts-loader.php:392
 msgid "Gift %s has been removed."
 msgstr ""
 
-#: bp-gifts-loader-v2.php:471 bp-gifts-loader.php:395
-#: build/bp-gifts-loader-v2.php:471 build/bp-gifts-loader.php:395
+#: bp-gifts-loader.php:393
 msgid "Showing all %s gifts"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:472 bp-gifts-loader.php:396
-#: build/bp-gifts-loader-v2.php:472 build/bp-gifts-loader.php:396
+#: bp-gifts-loader.php:394
 msgid "Showing %s of %s gifts"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:473 bp-gifts-loader.php:397
-#: build/bp-gifts-loader-v2.php:473 build/bp-gifts-loader.php:397
+#: bp-gifts-loader.php:395
 msgid "%s gifts found"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:474 bp-gifts-loader.php:398
-#: build/bp-gifts-loader-v2.php:474 build/bp-gifts-loader.php:398
-#: build/includes/services/BP_Gifts_Modal_Service.php:142
-#: includes/services/BP_Gifts_Modal_Service.php:142
+#: bp-gifts-loader.php:396
 msgid "No gifts available."
 msgstr ""
 
-#: bp-gifts-loader-v2.php:475 bp-gifts-loader.php:399
-#: build/bp-gifts-loader-v2.php:475 build/bp-gifts-loader.php:399
-#: build/includes/services/BP_Gifts_Modal_Service.php:265
-#: includes/services/BP_Gifts_Modal_Service.php:265
+#: bp-gifts-loader.php:397 includes/BP_Gifts_Modal.php:71
 msgid "Search gifts..."
 msgstr ""
 
-#: bp-gifts-loader-v2.php:476 bp-gifts-loader.php:400
-#: build/bp-gifts-loader-v2.php:476 build/bp-gifts-loader.php:400
-#: build/includes/services/BP_Gifts_Modal_Service.php:296
-#: includes/services/BP_Gifts_Modal_Service.php:296
+#: bp-gifts-loader.php:398
 msgid "All categories"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:477 build/bp-gifts-loader-v2.php:477
-msgid "Attached to thread"
-msgstr ""
-
-#: bp-gifts-loader-v2.php:494 build/bp-gifts-loader-v2.php:494
-msgid "Gift selection temporarily unavailable."
-msgstr ""
-
-#: bp-gifts-loader-v2.php:594 build/bp-gifts-loader-v2.php:594
-msgid "Please log in to view your gifts."
-msgstr ""
-
-#: bp-gifts-loader.php:417 build/bp-gifts-loader.php:417
-#: build/includes/services/BP_Gifts_Modal_Service.php:62
-#: includes/services/BP_Gifts_Modal_Service.php:62
+#: bp-gifts-loader.php:415
 msgid "Send a Gift"
 msgstr ""
 
-#: bp-gifts-loader.php:422 build/bp-gifts-loader.php:422
-#: build/includes/services/BP_Gifts_Modal_Service.php:101
-#: includes/services/BP_Gifts_Modal_Service.php:101
+#: bp-gifts-loader.php:420 includes/BP_Gifts_Core.php:637
 msgid "Select a gift"
 msgstr ""
 
-#: build/includes/BP_Gifts_Container.php:93 includes/BP_Gifts_Container.php:93
-#. translators: %s: Service name
-msgid "Service \"%s\" not found in container."
+#: bp-gifts.php:69
+msgid "User Gifts"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:51
-#: build/includes/BP_Gifts_Settings.php:61 includes/BP_Gifts_Profile_Tab.php:51
-#: includes/BP_Gifts_Settings.php:61
+#: bp-gifts.php:70
+msgid ""
+"Allow members to send virtual gifts to each other through private messages, "
+"creating a more engaging and social community experience."
+msgstr ""
+
+#: bp-gifts.php:144
+msgid "BP Gifts requires BuddyPress to be installed and activated."
+msgstr ""
+
+#: includes/BP_Gifts_Admin.php:129
+msgid "Thumbnail"
+msgstr ""
+
+#: includes/BP_Gifts_Admin.php:130
+msgid "Categories"
+msgstr ""
+
+#: includes/BP_Gifts_Admin.php:133
+msgid "Cost"
+msgstr ""
+
+#: includes/BP_Gifts_Admin.php:173 includes/BP_Gifts_Core.php:639
+#: includes/BP_Gifts_Modal.php:63 includes/BP_Gifts_Modal.php:140
+msgid "points"
+msgstr ""
+
+#: includes/BP_Gifts_Admin.php:175 includes/BP_Gifts_Core.php:640
+#: includes/BP_Gifts_Modal.php:142 includes/BP_Gifts_MyCred.php:174
+msgid "Free"
+msgstr ""
+
+#: includes/BP_Gifts_Admin.php:190
+msgid "Gift Description"
+msgstr ""
+
+#: includes/BP_Gifts_Admin.php:208
+msgid "Description (optional):"
+msgstr ""
+
+#: includes/BP_Gifts_Admin.php:212
+msgid "This description will be shown when the gift is displayed in messages."
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:226 includes/BP_Gifts_Taxonomy.php:75
+msgid "Search Gift Categories"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:227 includes/BP_Gifts_Taxonomy.php:76
+msgid "Popular Gift Categories"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:228 includes/BP_Gifts_Taxonomy.php:77
+msgid "All Gift Categories"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:231 includes/BP_Gifts_Taxonomy.php:80
+msgid "Edit Gift Category"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:232 includes/BP_Gifts_Taxonomy.php:81
+msgid "Update Gift Category"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:233 includes/BP_Gifts_Taxonomy.php:82
+msgid "Add New Gift Category"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:234 includes/BP_Gifts_Taxonomy.php:83
+msgid "New Gift Category Name"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:235 includes/BP_Gifts_Taxonomy.php:84
+msgid "Separate gift categories with commas"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:236 includes/BP_Gifts_Taxonomy.php:85
+msgid "Add or remove gift categories"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:237 includes/BP_Gifts_Taxonomy.php:86
+msgid "Choose from the most used gift categories"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:238 includes/BP_Gifts_Taxonomy.php:87
+msgid "No gift categories found."
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:239 includes/BP_Gifts_Taxonomy.php:88
+msgid "Gift Categories"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:311
+msgid "Please log in to view your gifts."
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:320 templates/user-gifts-dashboard.php:206
+msgid "Gift Statistics"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:324 includes/BP_Gifts_Core.php:422
+msgid "Gifts Sent"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:328 includes/BP_Gifts_Core.php:426
+msgid "Gifts Received"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:343
+msgid "Recent Gift Activity"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:370
+msgid "Sent to %s"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:375
+msgid "Received from %s"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:380
+msgid "ago"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:388
+msgid "No gift activity found."
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:411
+msgid "Please log in to view gift statistics."
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:430
+msgid "Total Activity"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:454
+msgid "No popular gifts found."
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:481
+msgid "Sent %d time"
+msgid_plural "Sent %d times"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/BP_Gifts_Core.php:626
+msgid "Showing all %d gifts"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:627
+msgid "Showing %1$d of %2$d gifts"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:628
+msgid "%d gifts found"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:630
+msgid "Attached to thread"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:632
+msgid "Gift %s selected for thread"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:633
+msgid "Gift %s selected"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:634
+msgid "Gift %s removed"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:635
+msgid "No gifts found"
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:636
+msgid "Loading gifts..."
+msgstr ""
+
+#: includes/BP_Gifts_Core.php:638 includes/BP_Gifts_Messages.php:74
+msgid "You do not have enough points to send this gift."
+msgstr ""
+
+#: includes/BP_Gifts_Modal.php:46
+msgid "Attach Gift"
+msgstr ""
+
+#: includes/BP_Gifts_Modal.php:54
+msgid "Select a Gift"
+msgstr ""
+
+#: includes/BP_Gifts_Modal.php:62
+msgid "Your Balance:"
+msgstr ""
+
+#: includes/BP_Gifts_Modal.php:66
+msgid "Close"
+msgstr ""
+
+#: includes/BP_Gifts_Modal.php:76
+msgid "Category:"
+msgstr ""
+
+#: includes/BP_Gifts_Modal.php:78
+msgid "All Categories"
+msgstr ""
+
+#: includes/BP_Gifts_Modal.php:123
+msgid "Select gift: %s"
+msgstr ""
+
+#: includes/BP_Gifts_Modal.php:148
+msgid "Insufficient funds"
+msgstr ""
+
+#: includes/BP_Gifts_Modal.php:189
+msgid "Gift Attached"
+msgstr ""
+
+#: includes/BP_Gifts_Modal.php:223
+msgid "Gifts in this conversation"
+msgstr ""
+
+#: includes/BP_Gifts_Modal.php:235
+msgid "Sent by %s on %s"
+msgstr ""
+
+#: includes/BP_Gifts_MyCred.php:74
+msgid "Sent gift \"%s\" to %s"
+msgstr ""
+
+#: includes/BP_Gifts_MyCred.php:127
+msgid "Received gift \"%s\" from %s"
+msgstr ""
+
+#: includes/BP_Gifts_MyCred.php:254
+msgid "Gift Cost (myCred)"
+msgstr ""
+
+#: includes/BP_Gifts_MyCred.php:274
+msgid "Cost in points:"
+msgstr ""
+
+#: includes/BP_Gifts_MyCred.php:284
+msgid "Leave empty or set to 0 for free gifts."
+msgstr ""
+
+#: includes/BP_Gifts_Profile_Tab.php:51 includes/BP_Gifts_Settings.php:80
 msgid "Gifts"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:61
-#: build/includes/BP_Gifts_Profile_Tab.php:231
-#: build/templates/user-gifts-dashboard.php:59
 #: includes/BP_Gifts_Profile_Tab.php:61 includes/BP_Gifts_Profile_Tab.php:231
 #: templates/user-gifts-dashboard.php:59
 msgid "Received"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:70
-#: build/includes/BP_Gifts_Profile_Tab.php:235
-#: build/templates/user-gifts-dashboard.php:64
 #: includes/BP_Gifts_Profile_Tab.php:70 includes/BP_Gifts_Profile_Tab.php:235
 #: templates/user-gifts-dashboard.php:64
 msgid "Sent"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:117
-#: build/templates/user-gifts-dashboard.php:79
 #: includes/BP_Gifts_Profile_Tab.php:117 templates/user-gifts-dashboard.php:79
 msgid "Received Gifts"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:126
-#: build/templates/user-gifts-dashboard.php:89
 #: includes/BP_Gifts_Profile_Tab.php:126 templates/user-gifts-dashboard.php:89
 msgid "Sent Gifts"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:138
-#: build/includes/BP_Gifts_Profile_Tab.php:178
 #: includes/BP_Gifts_Profile_Tab.php:138 includes/BP_Gifts_Profile_Tab.php:178
 msgid "User not found."
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:164
-#: build/includes/BP_Gifts_Profile_Tab.php:204
 #: includes/BP_Gifts_Profile_Tab.php:164 includes/BP_Gifts_Profile_Tab.php:204
 msgid "Error loading gifts. Please try again later."
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:244
-#: build/templates/user-gifts-dashboard.php:96
 #: includes/BP_Gifts_Profile_Tab.php:244 templates/user-gifts-dashboard.php:96
 msgid "Filter by gift type"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:251
-#: build/templates/user-gifts-dashboard.php:103
 #: includes/BP_Gifts_Profile_Tab.php:251 templates/user-gifts-dashboard.php:103
 msgid "Message Gifts"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:254
-#: build/templates/user-gifts-dashboard.php:106
 #: includes/BP_Gifts_Profile_Tab.php:254 templates/user-gifts-dashboard.php:106
 msgid "Thread Gifts"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:262
-#: build/templates/user-gifts-dashboard.php:114
 #: includes/BP_Gifts_Profile_Tab.php:262 templates/user-gifts-dashboard.php:114
 msgid "Gifts list"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:274
-#: build/templates/user-gifts-dashboard.php:126
 #: includes/BP_Gifts_Profile_Tab.php:274 templates/user-gifts-dashboard.php:126
 msgid "Thread"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:277
-#: build/templates/user-gifts-dashboard.php:129
 #: includes/BP_Gifts_Profile_Tab.php:277 templates/user-gifts-dashboard.php:129
 msgid "Message"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:290
-#: build/templates/user-gifts-dashboard.php:142
 #: includes/BP_Gifts_Profile_Tab.php:290 templates/user-gifts-dashboard.php:142
 msgid "From:"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:298
-#: build/templates/user-gifts-dashboard.php:150
 #: includes/BP_Gifts_Profile_Tab.php:298 templates/user-gifts-dashboard.php:150
 msgid "To:"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:307
-#: build/templates/user-gifts-dashboard.php:159
 #: includes/BP_Gifts_Profile_Tab.php:307 templates/user-gifts-dashboard.php:159
 msgid "Date:"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:323
-#: build/templates/user-gifts-dashboard.php:175
 #: includes/BP_Gifts_Profile_Tab.php:323 templates/user-gifts-dashboard.php:175
 msgid "View Conversation"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:339
-#: build/templates/user-gifts-dashboard.php:188
 #: includes/BP_Gifts_Profile_Tab.php:339 templates/user-gifts-dashboard.php:188
 msgid "No gifts sent yet"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:341
-#: build/templates/user-gifts-dashboard.php:190
 #: includes/BP_Gifts_Profile_Tab.php:341 templates/user-gifts-dashboard.php:190
 msgid "No gifts received yet"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:346
-#: build/templates/user-gifts-dashboard.php:195
 #: includes/BP_Gifts_Profile_Tab.php:346 templates/user-gifts-dashboard.php:195
 msgid "Start spreading joy by sending gifts to your friends!"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:348
-#: build/templates/user-gifts-dashboard.php:197
 #: includes/BP_Gifts_Profile_Tab.php:348 templates/user-gifts-dashboard.php:197
 msgid "Gifts you receive will appear here."
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:392
 #: includes/BP_Gifts_Profile_Tab.php:392
 msgid "« Previous"
 msgstr ""
 
-#: build/includes/BP_Gifts_Profile_Tab.php:399
 #: includes/BP_Gifts_Profile_Tab.php:399
 msgid "Next »"
 msgstr ""
 
-#: build/includes/BP_Gifts_Settings.php:73 includes/BP_Gifts_Settings.php:73
-msgid "Gifts Settings"
-msgstr ""
-
-#: build/includes/BP_Gifts_Settings.php:74 includes/BP_Gifts_Settings.php:74
-msgid "Configure BP Gifts plugin settings and user interface options."
-msgstr ""
-
-#: build/includes/BP_Gifts_Settings.php:81 includes/BP_Gifts_Settings.php:81
+#: includes/BP_Gifts_Settings.php:88
 msgid "Enable Gifts"
 msgstr ""
 
-#: build/includes/BP_Gifts_Settings.php:93 includes/BP_Gifts_Settings.php:93
+#: includes/BP_Gifts_Settings.php:97
+msgid "User Profile Tab"
+msgstr ""
+
+#: includes/BP_Gifts_Settings.php:106
+msgid "Category Filter"
+msgstr ""
+
+#: includes/BP_Gifts_Settings.php:116
+msgid "myCred Integration"
+msgstr ""
+
+#: includes/BP_Gifts_Settings.php:124
+msgid "Point Type"
+msgstr ""
+
+#: includes/BP_Gifts_Settings.php:139
+msgid "Configure BP Gifts plugin settings and user interface options."
+msgstr ""
+
+#: includes/BP_Gifts_Settings.php:158
 msgid "Allow users to send and receive gifts through messages"
 msgstr ""
 
-#: build/includes/BP_Gifts_Settings.php:96 includes/BP_Gifts_Settings.php:96
+#: includes/BP_Gifts_Settings.php:161
 msgid ""
 "When enabled, users can attach gifts to their BuddyPress messages. Disable "
 "this to hide all gift functionality."
 msgstr ""
 
-#: build/includes/BP_Gifts_Settings.php:104 includes/BP_Gifts_Settings.php:104
-msgid "Enable User Gifts Tab"
-msgstr ""
-
-#: build/includes/BP_Gifts_Settings.php:116 includes/BP_Gifts_Settings.php:116
+#: includes/BP_Gifts_Settings.php:181
 msgid "Add a \"Gifts\" tab to user profiles"
 msgstr ""
 
-#: build/includes/BP_Gifts_Settings.php:119 includes/BP_Gifts_Settings.php:119
+#: includes/BP_Gifts_Settings.php:184
 msgid ""
 "When enabled, users will see a \"Gifts\" tab on their own profile where "
-"they can view their gift history. Only visible to the profile owner."
+"they can view their gift history."
 msgstr ""
 
-#: build/includes/BP_Gifts_Settings.php:127 includes/BP_Gifts_Settings.php:127
-msgid "Additional Information"
+#: includes/BP_Gifts_Settings.php:204
+msgid "Show category filter in gift selection modal"
 msgstr ""
 
-#: build/includes/BP_Gifts_Settings.php:129 includes/BP_Gifts_Settings.php:129
-msgid "Gifts can also be displayed using the [bp_user_gifts] shortcode on any page"
+#: includes/BP_Gifts_Settings.php:207
+msgid ""
+"When enabled, users can filter gifts by category when selecting a gift to "
+"send. Requires gift categories to be created first."
 msgstr ""
 
-#: build/includes/BP_Gifts_Settings.php:130 includes/BP_Gifts_Settings.php:130
-msgid "Gift categories can be managed under Gifts > Gift Categories"
+#: includes/BP_Gifts_Settings.php:228
+msgid "Allow gifts to cost points using myCred"
 msgstr ""
 
-#: build/includes/BP_Gifts_Settings.php:131 includes/BP_Gifts_Settings.php:131
-msgid "Individual gifts can be created under Gifts > Add New"
+#: includes/BP_Gifts_Settings.php:233
+msgid ""
+"When enabled, gifts can have point costs and users must spend points to "
+"send them."
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:75 includes/BP_Gifts_Taxonomy.php:75
-msgid "Search Gift Categories"
+#: includes/BP_Gifts_Settings.php:235
+msgid "myCred plugin is required for this feature."
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:76 includes/BP_Gifts_Taxonomy.php:76
-msgid "Popular Gift Categories"
+#: includes/BP_Gifts_Settings.php:261
+msgid "Select which myCred point type to use for gift costs."
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:77 includes/BP_Gifts_Taxonomy.php:77
-msgid "All Gift Categories"
+#: includes/BP_Gifts_Settings.php:369
+msgid "Points"
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:78 includes/BP_Gifts_Taxonomy.php:78
+#: includes/BP_Gifts_Taxonomy.php:78
 msgid "Parent Gift Category"
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:79 includes/BP_Gifts_Taxonomy.php:79
+#: includes/BP_Gifts_Taxonomy.php:79
 msgid "Parent Gift Category:"
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:80 includes/BP_Gifts_Taxonomy.php:80
-msgid "Edit Gift Category"
-msgstr ""
-
-#: build/includes/BP_Gifts_Taxonomy.php:81 includes/BP_Gifts_Taxonomy.php:81
-msgid "Update Gift Category"
-msgstr ""
-
-#: build/includes/BP_Gifts_Taxonomy.php:82 includes/BP_Gifts_Taxonomy.php:82
-msgid "Add New Gift Category"
-msgstr ""
-
-#: build/includes/BP_Gifts_Taxonomy.php:83 includes/BP_Gifts_Taxonomy.php:83
-msgid "New Gift Category Name"
-msgstr ""
-
-#: build/includes/BP_Gifts_Taxonomy.php:84 includes/BP_Gifts_Taxonomy.php:84
-msgid "Separate gift categories with commas"
-msgstr ""
-
-#: build/includes/BP_Gifts_Taxonomy.php:85 includes/BP_Gifts_Taxonomy.php:85
-msgid "Add or remove gift categories"
-msgstr ""
-
-#: build/includes/BP_Gifts_Taxonomy.php:86 includes/BP_Gifts_Taxonomy.php:86
-msgid "Choose from the most used gift categories"
-msgstr ""
-
-#: build/includes/BP_Gifts_Taxonomy.php:87 includes/BP_Gifts_Taxonomy.php:87
-msgid "No gift categories found."
-msgstr ""
-
-#: build/includes/BP_Gifts_Taxonomy.php:88 includes/BP_Gifts_Taxonomy.php:88
-msgid "Gift Categories"
-msgstr ""
-
-#: build/includes/BP_Gifts_Taxonomy.php:174 includes/BP_Gifts_Taxonomy.php:174
+#: includes/BP_Gifts_Taxonomy.php:174
 msgid "Holiday Gifts"
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:176 includes/BP_Gifts_Taxonomy.php:176
+#: includes/BP_Gifts_Taxonomy.php:176
 msgid "Gifts for holidays and special occasions"
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:179 includes/BP_Gifts_Taxonomy.php:179
+#: includes/BP_Gifts_Taxonomy.php:179
 msgid "Birthday Gifts"
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:181 includes/BP_Gifts_Taxonomy.php:181
+#: includes/BP_Gifts_Taxonomy.php:181
 msgid "Perfect gifts for birthdays"
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:184 includes/BP_Gifts_Taxonomy.php:184
+#: includes/BP_Gifts_Taxonomy.php:184
 msgid "Thank You Gifts"
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:186 includes/BP_Gifts_Taxonomy.php:186
+#: includes/BP_Gifts_Taxonomy.php:186
 msgid "Express gratitude with these gifts"
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:189 includes/BP_Gifts_Taxonomy.php:189
+#: includes/BP_Gifts_Taxonomy.php:189
 msgid "Just Because"
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:191 includes/BP_Gifts_Taxonomy.php:191
+#: includes/BP_Gifts_Taxonomy.php:191
 msgid "Gifts for no special reason"
 msgstr ""
 
-#: build/includes/services/BP_Gifts_Modal_Service.php:83
-#: includes/services/BP_Gifts_Modal_Service.php:83
-msgid "Selected gift"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:123
-#: includes/services/BP_Gifts_Modal_Service.php:123
-msgid "Close gift selection modal"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:133
-#: includes/services/BP_Gifts_Modal_Service.php:133
-msgid "Gift selection list"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:135
-#: includes/services/BP_Gifts_Modal_Service.php:135
-msgid "Available gifts"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:146
-#: includes/services/BP_Gifts_Modal_Service.php:146
-msgid "Gift pagination"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:176
-#: includes/services/BP_Gifts_Modal_Service.php:176
-#. translators: %s: Gift name
-msgid "Select gift: %s"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:227
-#: includes/services/BP_Gifts_Modal_Service.php:227
-msgid "Gift: %s"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:241
-#: includes/services/BP_Gifts_Modal_Service.php:241
-msgid "Remove selected gift"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:272
-#: includes/services/BP_Gifts_Modal_Service.php:272
-msgid "Gift search and filters"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:276
-#: includes/services/BP_Gifts_Modal_Service.php:276
-msgid "Search gifts"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:285
-#: includes/services/BP_Gifts_Modal_Service.php:285
-msgid "Type to search through available gifts by name"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:293
-#: includes/services/BP_Gifts_Modal_Service.php:293
-msgid "Filter by category:"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:328
-#: includes/services/BP_Gifts_Modal_Service.php:328
-msgid "Thread gift"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:332
-#: includes/services/BP_Gifts_Modal_Service.php:332
-msgid "Thread Gift"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:365
-#: includes/services/BP_Gifts_Modal_Service.php:365
-msgid "Gifts in this conversation"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:372
-#: includes/services/BP_Gifts_Modal_Service.php:372
-#. translators: %d: number of gifts
-msgid "%d Gift in this conversation"
-msgid_plural "%d Gifts in this conversation"
-msgstr[0] ""
-msgstr[1] ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:390
-#: includes/services/BP_Gifts_Modal_Service.php:390
-msgid "You sent:"
-msgstr ""
-
-#: build/includes/services/BP_Gifts_Modal_Service.php:394
-#: includes/services/BP_Gifts_Modal_Service.php:394
-#. translators: %s: sender name
-msgid "%s sent:"
-msgstr ""
-
-#: build/templates/user-gifts-dashboard.php:49
 #: templates/user-gifts-dashboard.php:49
 msgid "My Gifts"
 msgstr ""
 
-#: build/templates/user-gifts-dashboard.php:51
 #: templates/user-gifts-dashboard.php:51
 msgid "%s's Gifts"
 msgstr ""
 
-#: build/templates/user-gifts-dashboard.php:206
-#: templates/user-gifts-dashboard.php:206
-msgid "Gift Statistics"
-msgstr ""
-
-#: build/templates/user-gifts-dashboard.php:211
 #: templates/user-gifts-dashboard.php:211
 msgid "Most Received Gift"
 msgstr ""
 
-#: build/templates/user-gifts-dashboard.php:220
 #: templates/user-gifts-dashboard.php:220
 msgid "Received %d times"
 msgstr ""
 
-#: build/templates/user-gifts-dashboard.php:229
 #: templates/user-gifts-dashboard.php:229
 msgid "Most Active Gift Sender"
 msgstr ""
 
-#: build/templates/user-gifts-dashboard.php:235
 #: templates/user-gifts-dashboard.php:235
 msgid "%d gifts sent"
 msgstr ""
@@ -679,42 +626,37 @@ msgstr ""
 msgid "https://suiteplugins.com"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:321 bp-gifts-loader.php:218
-#: build/bp-gifts-loader-v2.php:321 build/bp-gifts-loader.php:218
+#: bp-gifts-loader.php:216 includes/BP_Gifts_Core.php:176
 msgctxt "post type general name"
 msgid "Gifts"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:322 bp-gifts-loader.php:219
-#: build/bp-gifts-loader-v2.php:322 build/bp-gifts-loader.php:219
+#: bp-gifts-loader.php:217 includes/BP_Gifts_Core.php:177
 msgctxt "post type singular name"
 msgid "Gift"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:323 bp-gifts-loader.php:220
-#: build/bp-gifts-loader-v2.php:323 build/bp-gifts-loader.php:220
+#: bp-gifts-loader.php:218 includes/BP_Gifts_Core.php:178
 msgctxt "admin menu"
 msgid "Gifts"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:324 bp-gifts-loader.php:221
-#: build/bp-gifts-loader-v2.php:324 build/bp-gifts-loader.php:221
+#: bp-gifts-loader.php:219 includes/BP_Gifts_Core.php:179
 msgctxt "add new on admin bar"
 msgid "Gift"
 msgstr ""
 
-#: bp-gifts-loader-v2.php:325 bp-gifts-loader.php:222
-#: build/bp-gifts-loader-v2.php:325 build/bp-gifts-loader.php:222
+#: bp-gifts-loader.php:220 includes/BP_Gifts_Core.php:180
 msgctxt "Gift"
 msgid "Add New"
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:73 includes/BP_Gifts_Taxonomy.php:73
+#: includes/BP_Gifts_Core.php:224 includes/BP_Gifts_Taxonomy.php:73
 msgctxt "taxonomy general name"
 msgid "Gift Categories"
 msgstr ""
 
-#: build/includes/BP_Gifts_Taxonomy.php:74 includes/BP_Gifts_Taxonomy.php:74
+#: includes/BP_Gifts_Core.php:225 includes/BP_Gifts_Taxonomy.php:74
 msgctxt "taxonomy singular name"
 msgid "Gift Category"
 msgstr ""

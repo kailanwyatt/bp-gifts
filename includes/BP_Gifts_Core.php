@@ -209,6 +209,51 @@ class BP_Gifts_Core {
 		);
 
 		register_post_type( $this->post_type, $args );
+		
+		// Register gift category taxonomy
+		$this->register_gift_category_taxonomy();
+	}
+
+	/**
+	 * Register the gift category taxonomy.
+	 *
+	 * @since 2.2.0
+	 */
+	public function register_gift_category_taxonomy() {
+		$labels = array(
+			'name'                       => _x( 'Gift Categories', 'taxonomy general name', 'bp-gifts' ),
+			'singular_name'              => _x( 'Gift Category', 'taxonomy singular name', 'bp-gifts' ),
+			'search_items'               => __( 'Search Gift Categories', 'bp-gifts' ),
+			'popular_items'              => __( 'Popular Gift Categories', 'bp-gifts' ),
+			'all_items'                  => __( 'All Gift Categories', 'bp-gifts' ),
+			'parent_item'                => null,
+			'parent_item_colon'          => null,
+			'edit_item'                  => __( 'Edit Gift Category', 'bp-gifts' ),
+			'update_item'                => __( 'Update Gift Category', 'bp-gifts' ),
+			'add_new_item'               => __( 'Add New Gift Category', 'bp-gifts' ),
+			'new_item_name'              => __( 'New Gift Category Name', 'bp-gifts' ),
+			'separate_items_with_commas' => __( 'Separate gift categories with commas', 'bp-gifts' ),
+			'add_or_remove_items'        => __( 'Add or remove gift categories', 'bp-gifts' ),
+			'choose_from_most_used'      => __( 'Choose from the most used gift categories', 'bp-gifts' ),
+			'not_found'                  => __( 'No gift categories found.', 'bp-gifts' ),
+			'menu_name'                  => __( 'Gift Categories', 'bp-gifts' ),
+		);
+
+		$args = array(
+			'hierarchical'          => true,
+			'labels'                => $labels,
+			'show_ui'               => true,
+			'show_admin_column'     => true,
+			'show_in_nav_menus'     => false,
+			'show_tagcloud'         => false,
+			'query_var'             => true,
+			'public'                => false,
+			'publicly_queryable'    => false,
+			'rewrite'               => array( 'slug' => 'gift-category' ),
+			'show_in_rest'          => false,
+		);
+
+		register_taxonomy( 'gift_category', array( $this->post_type ), $args );
 	}
 
 	/**
@@ -550,6 +595,25 @@ class BP_Gifts_Core {
 			}
 		}
 
+		// Get myCred data if enabled
+		$mycred_data = array();
+		if ( BP_Gifts_Settings::is_mycred_enabled() ) {
+			$mycred = new BP_Gifts_MyCred();
+			$user_id = bp_loggedin_user_id();
+			
+			$mycred_data = array(
+				'enabled' => true,
+				'user_balance' => $user_id ? $mycred->get_user_balance( $user_id ) : 0,
+				'formatted_balance' => $user_id ? $mycred->get_user_balance( $user_id ) : '0',
+				'gifts_costs' => $mycred->get_gifts_with_costs(),
+			);
+			
+			// Get formatted balance if possible
+			if ( $user_id && function_exists( 'mycred_display_users_balance' ) ) {
+				$mycred_data['formatted_balance'] = mycred_display_users_balance( $user_id );
+			}
+		}
+
 		// Localize script
 		wp_localize_script(
 			'bp-gifts-main',
@@ -558,6 +622,7 @@ class BP_Gifts_Core {
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
 				'nonce'    => wp_create_nonce( 'bp_gifts_nonce' ),
 				'thread_id' => $current_thread_id,
+				'mycred' => $mycred_data,
 				'showing_all_text' => __( 'Showing all %d gifts', 'bp-gifts' ),
 				'showing_filtered_text' => __( 'Showing %1$d of %2$d gifts', 'bp-gifts' ),
 				'search_results_text' => __( '%d gifts found', 'bp-gifts' ),
@@ -570,6 +635,9 @@ class BP_Gifts_Core {
 				'no_gifts_found_text' => __( 'No gifts found', 'bp-gifts' ),
 				'loading_text' => __( 'Loading gifts...', 'bp-gifts' ),
 				'select_gift_text' => __( 'Select a gift', 'bp-gifts' ),
+				'insufficient_funds_text' => __( 'You do not have enough points to send this gift.', 'bp-gifts' ),
+				'points_text' => __( 'points', 'bp-gifts' ),
+				'free_text' => __( 'Free', 'bp-gifts' ),
 			)
 		);
 		
@@ -676,7 +744,13 @@ class BP_Gifts_Core {
 			// Deduct points if myCred is enabled
 			if ( BP_Gifts_Settings::is_mycred_enabled() ) {
 				$mycred = new BP_Gifts_MyCred();
-				$mycred->charge_user_for_gift( $message_obj->sender_id, $gift_id );
+				// For group messages, we'll charge per gift sent, not per recipient
+				$success = $mycred->charge_user_for_gift( $message_obj->sender_id, 0, $gift_id );
+				if ( ! $success ) {
+					if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+						error_log( 'BP Gifts: Failed to charge user ' . $message_obj->sender_id . ' for gift ' . $gift_id );
+					}
+				}
 			}
 			
 			wp_send_json_success( array( 

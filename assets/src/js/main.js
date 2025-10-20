@@ -32,7 +32,12 @@ jQuery(document).ready(function($) {
 	};
 
 	var giftList = new List('bp-gifts-list', {
-		valueNames: ['bp-gift-title'],
+		valueNames: [
+			'bp-gift-title',
+			{ data: ['name'] },
+			{ data: ['categories'] },
+			'bp-gift-categories'
+		],
 		page: 6,
 		plugins: [ListPagination(paginationOptions)]
 	});
@@ -54,33 +59,107 @@ jQuery(document).ready(function($) {
 		performSearch($searchInput.val(), category);
 	});
 
-	// Search function
+	// Enhanced search function with category filtering
 	function performSearch(searchTerm, category) {
-		// Filter by search term
+		// First clear any existing filters
+		giftList.filter();
+		
+		// Apply search term filter
 		if (searchTerm) {
-			giftList.search(searchTerm);
+			giftList.search(searchTerm, ['bp-gift-title', 'bp-gift-categories']);
 		} else {
 			giftList.search();
 		}
 
-		// Additional category filtering would go here
-		// This would require server-side AJAX for full implementation
+		// Apply category filter
+		if (category) {
+			giftList.filter(function(item) {
+				var itemCategories = $(item.elm).find('.bp-gift-item-ele').data('categories') || '';
+				return itemCategories.indexOf(category) !== -1;
+			});
+		}
 		
-		updateResultsInfo();
+		updateResultsInfo(searchTerm, category);
 		announceResults(searchTerm, category);
 	}
 
-	// Update results count
-	function updateResultsInfo() {
+	// Update results count with more detailed info
+	function updateResultsInfo(searchTerm, category) {
 		var visibleCount = giftList.visibleItems.length;
 		var totalCount = giftList.items.length;
+		var message = '';
 		
-		if (visibleCount === totalCount) {
-			$resultsInfo.text(sprintf(bp_gifts_vars.showing_all_text, visibleCount));
+		if (!searchTerm && !category) {
+			message = 'Showing all ' + totalCount + ' gifts';
+		} else if (visibleCount === 0) {
+			message = 'No gifts found';
+			if (searchTerm && category) {
+				message += ' for "' + searchTerm + '" in category "' + getCategoryName(category) + '"';
+			} else if (searchTerm) {
+				message += ' for "' + searchTerm + '"';
+			} else if (category) {
+				message += ' in category "' + getCategoryName(category) + '"';
+			}
 		} else {
-			$resultsInfo.text(sprintf(bp_gifts_vars.showing_filtered_text, visibleCount, totalCount));
+			message = 'Showing ' + visibleCount + ' of ' + totalCount + ' gifts';
+			if (searchTerm && category) {
+				message += ' for "' + searchTerm + '" in category "' + getCategoryName(category) + '"';
+			} else if (searchTerm) {
+				message += ' matching "' + searchTerm + '"';
+			} else if (category) {
+				message += ' in category "' + getCategoryName(category) + '"';
+			}
+		}
+		
+		$resultsInfo.text(message);
+		
+		// Update empty state
+		var $giftsList = $('#bp-gifts-list .list');
+		if (visibleCount === 0) {
+			if (!$('.bp-gifts-no-results').length) {
+				$giftsList.after('<div class="bp-gifts-no-results"><p>Try adjusting your search or filter criteria.</p></div>');
+			}
+		} else {
+			$('.bp-gifts-no-results').remove();
 		}
 	}
+
+	// Helper function to get category display name
+	function getCategoryName(categorySlug) {
+		var $option = $categorySelect.find('option[value="' + categorySlug + '"]');
+		return $option.length ? $option.text() : categorySlug;
+	}
+
+	// Clear all filters function
+	function clearFilters() {
+		$searchInput.val('');
+		$categorySelect.val('');
+		giftList.search();
+		giftList.filter();
+		updateResultsInfo('', '');
+		$('.bp-gifts-no-results').remove();
+	}
+
+	// Add clear filters button functionality (if it exists)
+	$(document).on('click', '.bp-gifts-clear-filters', function(e) {
+		e.preventDefault();
+		clearFilters();
+	});
+
+	// Keyboard shortcuts for search
+	$searchInput.on('keydown', function(e) {
+		// Escape key clears search
+		if (e.which === 27) {
+			clearFilters();
+		}
+	});
+
+	// Initialize results count on page load
+	$(window).on('load', function() {
+		if (typeof giftList !== 'undefined' && giftList.items) {
+			updateResultsInfo('', '');
+		}
+	});
 
 	// Announce search results to screen readers
 	function announceResults(searchTerm, category) {
@@ -122,9 +201,19 @@ jQuery(document).ready(function($) {
 			var image = $this.data('image');
 			var id = $this.data('id');
 			var name = $this.data('name') || $this.find('.bp-gift-title').text().trim();
+			var cost = $this.data('cost') || 0;
+			var canAfford = $this.data('can-afford');
 
 			if (!image || !id) {
 				return;
+			}
+
+			// Check myCred affordability if enabled
+			if (bp_gifts_vars.mycred && bp_gifts_vars.mycred.enabled) {
+				if (cost > 0 && canAfford === false) {
+					alert(bp_gifts_vars.insufficient_funds_text || 'You do not have enough points to send this gift.');
+					return;
+				}
 			}
 
 			// Check if we're in thread context
@@ -140,7 +229,8 @@ jQuery(document).ready(function($) {
 				gift_image: image,
 				thread_id: threadId,
 				context: isThreadContext ? 'thread' : 'message',
-				timestamp: Date.now()
+				timestamp: Date.now(),
+				cost: cost
 			};
             console.log('Setting cookie data:', cookieData);
 			

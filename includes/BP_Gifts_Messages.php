@@ -91,9 +91,18 @@ class BP_Gifts_Messages {
 		}
 
 		// Deduct points if myCred is enabled
-		if ( BP_Gifts_Settings::is_mycred_enabled() ) {
+		if ( BP_Gifts_Settings::is_mycred_enabled() && $relationship_result ) {
 			$mycred = new BP_Gifts_MyCred();
-			$mycred->charge_user_for_gift( bp_loggedin_user_id(), $gift_id );
+			// Get recipients for proper transaction logging
+			$recipients = $this->get_message_recipients( $message->thread_id );
+			$receiver_id = ! empty( $recipients ) ? $recipients[0]->user_id : 0;
+			$success = $mycred->charge_user_for_gift( bp_loggedin_user_id(), $receiver_id, $gift_id );
+			if ( ! $success ) {
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( 'BP Gifts: Failed to charge user for gift ' . $gift_id );
+				}
+				// Don't fail the entire process, but log the error
+			}
 		}
 	}
 

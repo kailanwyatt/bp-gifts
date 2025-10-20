@@ -60,6 +60,12 @@ class BP_Gifts_Settings {
 			'default'           => 'mycred_default',
 			'sanitize_callback' => 'sanitize_text_field',
 		));
+
+		register_setting( 'buddypress', 'bp_gifts_enable_category_filter', array(
+			'type'              => 'boolean',
+			'default'           => true,
+			'sanitize_callback' => 'rest_sanitize_boolean',
+		));
 	}
 
 	/**
@@ -90,6 +96,15 @@ class BP_Gifts_Settings {
 			'bp_gifts_enable_user_tab', 
 			__( 'User Profile Tab', 'bp-gifts' ), 
 			array( __CLASS__, 'user_tab_field_callback' ), 
+			'buddypress', 
+			'bp_gifts' 
+		);
+
+		// Add category filter field
+		add_settings_field( 
+			'bp_gifts_enable_category_filter', 
+			__( 'Category Filter', 'bp-gifts' ), 
+			array( __CLASS__, 'category_filter_field_callback' ), 
 			'buddypress', 
 			'bp_gifts' 
 		);
@@ -172,6 +187,29 @@ class BP_Gifts_Settings {
 	}
 
 	/**
+	 * Category filter field callback.
+	 *
+	 * @since 2.2.0
+	 */
+	public static function category_filter_field_callback() {
+		?>
+		<label for="bp-gifts-enable-category-filter">
+			<input 
+				type="checkbox" 
+				id="bp-gifts-enable-category-filter" 
+				name="bp_gifts_enable_category_filter" 
+				value="1" 
+				<?php checked( self::is_category_filter_enabled() ); ?> 
+			/>
+			<?php esc_html_e( 'Show category filter in gift selection modal', 'bp-gifts' ); ?>
+		</label>
+		<p class="description">
+			<?php esc_html_e( 'When enabled, users can filter gifts by category when selecting a gift to send. Requires gift categories to be created first.', 'bp-gifts' ); ?>
+		</p>
+		<?php
+	}
+
+	/**
 	 * myCred enabled field callback.
 	 *
 	 * @since 2.1.0
@@ -243,6 +281,16 @@ class BP_Gifts_Settings {
 	 */
 	public static function is_user_tab_enabled() {
 		return (bool) get_option( 'bp_gifts_enable_user_tab', true );
+	}
+
+	/**
+	 * Check if category filter is enabled.
+	 *
+	 * @since 2.2.0
+	 * @return bool True if category filter is enabled, false otherwise.
+	 */
+	public static function is_category_filter_enabled() {
+		return (bool) get_option( 'bp_gifts_enable_category_filter', true );
 	}
 
 	/**

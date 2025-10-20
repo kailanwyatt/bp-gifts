@@ -181,9 +181,7 @@ if ( ! class_exists( 'BP_Gifts_Loader' ) ) :
 		 * @since 1.0.0
 		 */
 		public function includes() {
-			if ( is_admin() ) {
-				require_once plugin_dir_path( __FILE__ ) . 'admin/class-bp-gifts-admin.php';
-			}
+			// Admin functionality is now handled by the modern BP_Gifts_Admin class in includes/
 		}
 		/**
 		 * Initialize hooks.

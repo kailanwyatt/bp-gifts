@@ -239,10 +239,12 @@ class BP_Gifts_Admin {
 
 		// Save description in post content
 		if ( isset( $_POST['gift_description'] ) ) {
+            remove_action( 'save_post', array( $this, 'save_meta_boxes' ) );
 			wp_update_post( array(
 				'ID'           => $post_id,
 				'post_content' => sanitize_textarea_field( $_POST['gift_description'] ),
 			) );
+            add_action( 'save_post', array( $this, 'save_meta_boxes' ) );
 		}
 	}
 }

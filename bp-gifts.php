@@ -123,6 +123,12 @@ function bp_gifts_init() {
 	// Initialize the plugin
 	BP_Gifts_Core::instance();
 	
+	// Initialize myCred integration if available
+	if ( class_exists( 'BP_Gifts_MyCred' ) ) {
+		$mycred_integration = new BP_Gifts_MyCred();
+		$mycred_integration->init_hooks();
+	}
+	
 	// Ensure database table exists
 	bp_gifts_check_database();
 }
